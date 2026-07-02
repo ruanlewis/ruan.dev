@@ -1,0 +1,6 @@
+{
+  "name": "Ruan Portfolio",
+  "description": "A refined, premium portfolio website for ruan.dev featuring custom Dynamic Island navigation, minimalist design, and an elegant editorial layout.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
