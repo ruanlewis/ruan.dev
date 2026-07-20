@@ -16,6 +16,7 @@ import {
   Coins,
   ArrowUpRight
 } from "lucide-react";
+import { supabase } from "../supabase";
 
 export default function Contact() {
   // Modal state
@@ -131,24 +132,73 @@ ${formData.timeline}
 ${formData.brief}
 `.trim();
 
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const message = finalMessage;
+    const honeypot = formData.honeypot;
+
+    // Filter out automated spam instantly via hidden honeypot field
+    if (honeypot && honeypot.length > 0) {
+      setTimeout(() => {
+        setScanState("success");
+        setIsSubmitting(false);
+        setFormData({
+          name: "",
+          email: "",
+          projectScope: "",
+          brief: "",
+          timeline: "",
+          budget: "",
+          honeypot: ""
+        });
+      }, 1500);
+      return;
+    }
+
+    if (!name || !email || !message) {
+      setScanState("none");
+      setIsSubmitting(false);
+      setErrorMsg("All fields are required");
+      return;
+    }
+
+    if (name.length > 100) {
+      setScanState("none");
+      setIsSubmitting(false);
+      setErrorMsg("Invalid name format (maximum 100 characters)");
+      return;
+    }
+
+    if (email.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setScanState("none");
+      setIsSubmitting(false);
+      setErrorMsg("Invalid email format");
+      return;
+    }
+
+    if (message.length > 2000) {
+      setScanState("none");
+      setIsSubmitting(false);
+      setErrorMsg("Invalid message content (maximum 2000 characters)");
+      return;
+    }
+
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          message: finalMessage,
-          honeypot: formData.honeypot
-        })
-      });
+      const id = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const timestamp = new Date().toISOString();
 
-      const result = await response.json();
+      const { error: dbError } = await supabase
+        .from("inquiries")
+        .insert({
+          id,
+          name,
+          email,
+          message,
+          timestamp
+        });
 
-      if (response.ok && result.success) {
-        // Enforce the premium "scanning" duration for full Face ID effect, then trigger checkmark
+      if (!dbError) {
+        // Enforce the premium "scanning" duration for Face ID effect, then trigger checkmark
         setTimeout(() => {
           setScanState("success");
           setIsSubmitting(false);
@@ -164,15 +214,16 @@ ${formData.brief}
           });
         }, 1800);
       } else {
+        console.error("Supabase insert error:", dbError);
         setScanState("none");
         setIsSubmitting(false);
-        setErrorMsg(result.error || "An error occurred while submitting. Please try again.");
+        setErrorMsg(dbError.message || "An error occurred while submitting. Please try again.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Submission error:", err);
       setScanState("none");
       setIsSubmitting(false);
-      setErrorMsg("Unable to connect to the server. Please try again later.");
+      setErrorMsg("Unable to connect to the database. Please try again later.");
     }
   };
 

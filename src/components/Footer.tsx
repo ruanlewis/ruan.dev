@@ -2,19 +2,12 @@ import { ArrowUp } from "lucide-react";
 import { MouseEvent } from "react";
 
 interface FooterProps {
-  onAdminClick: () => void;
   onPrivacyClick: () => void;
 }
 
-export default function Footer({ onAdminClick, onPrivacyClick }: FooterProps) {
+export default function Footer({ onPrivacyClick }: FooterProps) {
   const handleScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleConsoleClick = (e: MouseEvent<HTMLButtonElement>) => {
-    if (e.ctrlKey || e.metaKey) {
-      onAdminClick();
-    }
   };
 
   return (
@@ -53,12 +46,6 @@ export default function Footer({ onAdminClick, onPrivacyClick }: FooterProps) {
             className="hover:text-brand-blue transition-colors uppercase font-bold text-[10px] cursor-pointer"
           >
             Privacy Policy
-          </button>
-          <button
-            onClick={handleConsoleClick}
-            className="hover:text-brand-blue transition-colors uppercase font-bold text-[10px] cursor-pointer"
-          >
-            Console
           </button>
         </div>
 

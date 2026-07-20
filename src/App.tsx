@@ -14,18 +14,16 @@ import GlobeSection from "./components/GlobeSection";
 import Workflow from "./components/Workflow";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-import AdminPortal from "./components/AdminPortal";
 import PrivacyPolicyModal from "./components/PrivacyPolicyModal";
 import AllWorksInfinite from "./components/AllWorksInfinite";
 import { PROJECTS } from "./data";
 import { Project } from "./types";
+import { supabase } from "./supabase";
 
 export default function App() {
   const [view, setView] = useState<"home" | "all-works">("home");
   const [projectsList, setProjectsList] = useState<Project[]>(PROJECTS);
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [customParallaxImages, setCustomParallaxImages] = useState<Record<number, string>>({});
 
   const [theme, setTheme] = useState(() => {
@@ -57,19 +55,62 @@ export default function App() {
       let isMockHidden = false;
       let hiddenApiProjectIds: string[] = [];
       let serverParallax: Record<number, string> = {};
+
       try {
-        const response = await fetch("/api/projects");
-        const resJson = await response.json();
-        if (response.ok && resJson.success && Array.isArray(resJson.data)) {
-          customApiProjects = resJson.data;
-          isMockHidden = !!resJson.hideMockData;
-          hiddenApiProjectIds = resJson.hiddenProjectIds || [];
-          if (resJson.customParallaxImages) {
-            serverParallax = resJson.customParallaxImages;
+        // Fetch projects directly from Supabase
+        const { data: dbProjects, error: projectsError } = await supabase
+          .from("projects")
+          .select("*")
+          .order("created_at", { ascending: true });
+
+        if (!projectsError && dbProjects) {
+          customApiProjects = dbProjects.map((p: any) => ({
+            id: p.id,
+            title: p.title,
+            category: p.category,
+            year: p.year,
+            image: p.image,
+            alt: p.alt || p.title || "",
+            description: p.description,
+            details: Array.isArray(p.details) ? p.details : [],
+            link: p.link
+          }));
+        } else if (projectsError) {
+          console.warn("Error fetching projects from Supabase:", projectsError);
+        }
+
+        // Fetch settings directly from Supabase
+        const { data: settingsData, error: settingsError } = await supabase
+          .from("settings")
+          .select("value")
+          .eq("key", "app_settings")
+          .single();
+
+        if (!settingsError && settingsData && settingsData.value) {
+          const val = settingsData.value;
+          isMockHidden = !!val.hideMockData;
+          hiddenApiProjectIds = val.hiddenProjectIds || [];
+          if (val.customParallaxImages) {
+            serverParallax = val.customParallaxImages;
           }
+        } else if (settingsError) {
+          console.warn("Error fetching settings from Supabase:", settingsError.message);
+        }
+
+        // Fetch parallax_images directly from Supabase
+        const { data: parallaxData, error: parallaxError } = await supabase
+          .from("parallax_images")
+          .select("slot_idx, image_url");
+
+        if (!parallaxError && parallaxData) {
+          parallaxData.forEach((row: any) => {
+            serverParallax[row.slot_idx] = row.image_url;
+          });
+        } else if (parallaxError) {
+          console.warn("Error fetching parallax_images from Supabase:", parallaxError.message);
         }
       } catch (err) {
-        console.warn("Could not fetch remote custom projects, falling back to local list:", err);
+        console.warn("Could not fetch remote custom projects from Supabase, falling back to local list:", err);
       }
 
       // Merge with browser localStorage custom projects for double offline-first resiliency
@@ -124,7 +165,7 @@ export default function App() {
     }
 
     fetchCustomProjects();
-  }, [refreshTrigger]);
+  }, []);
 
   const triggerFocusInquiry = () => {
     const contactSection = document.getElementById("contact");
@@ -146,10 +187,6 @@ export default function App() {
     if (portfolioSection) {
       portfolioSection.scrollIntoView({ behavior: "smooth" });
     }
-  };
-
-  const handleProjectAdded = () => {
-    setRefreshTrigger((prev) => prev + 1);
   };
 
   return (
@@ -190,7 +227,7 @@ export default function App() {
             <Contact />
 
             {/* Site credits footer */}
-            <Footer onAdminClick={() => setIsAdminOpen(true)} onPrivacyClick={() => setIsPrivacyOpen(true)} />
+            <Footer onPrivacyClick={() => setIsPrivacyOpen(true)} />
           </motion.div>
         ) : (
           <motion.div
@@ -204,20 +241,10 @@ export default function App() {
               projects={projectsList} 
               customParallaxImages={customParallaxImages} 
               onBack={() => { setView("home"); window.scrollTo({ top: 0, behavior: "instant" }); }}
-              onRefresh={handleProjectAdded}
             />
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Secure systems password locked upload workspace portal */}
-      <AdminPortal
-        isOpen={isAdminOpen}
-        onClose={() => setIsAdminOpen(false)}
-        onProjectAdded={handleProjectAdded}
-        projects={projectsList}
-        customParallaxImages={customParallaxImages}
-      />
 
       {/* Privacy Policy view modal */}
       <PrivacyPolicyModal

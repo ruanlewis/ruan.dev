@@ -7,14 +7,11 @@ interface AllWorksInfiniteProps {
   projects: Project[];
   customParallaxImages?: Record<number, string>;
   onBack: () => void;
-  onRefresh: () => void;
 }
 
-export default function AllWorksInfinite({ projects, onBack, onRefresh }: AllWorksInfiniteProps) {
+export default function AllWorksInfinite({ projects, onBack }: AllWorksInfiniteProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [isRestoring, setIsRestoring] = useState(false);
-  const [restoreSuccess, setRestoreSuccess] = useState(false);
 
   // Filter projects based on search query and category
   const filteredProjects = projects.filter((p) => {
@@ -32,39 +29,6 @@ export default function AllWorksInfinite({ projects, onBack, onRefresh }: AllWor
     }
     return p.category.split(" ")[0].trim();
   })))].slice(0, 5);
-
-  // Restore mock data option if they emptied it
-  const handleRestoreShowcaseData = async () => {
-    setIsRestoring(true);
-    setRestoreSuccess(false);
-
-    try {
-      localStorage.removeItem("local_hide_mock_data");
-      
-      const token = sessionStorage.getItem("admin_token");
-      if (token) {
-        await fetch("/api/projects/restore-mock", {
-          method: "POST",
-          headers: { "Authorization": token }
-        });
-      } else {
-        await fetch("/api/projects/restore-mock", {
-          method: "POST"
-        }).catch(() => {});
-      }
-
-      setRestoreSuccess(true);
-      onRefresh(); // Refresh parent
-
-      setTimeout(() => {
-        setRestoreSuccess(false);
-      }, 3000);
-    } catch (err) {
-      console.error("Restoring error:", err);
-    } finally {
-      setIsRestoring(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-[#08080a] text-brand-navy dark:text-zinc-100 transition-colors duration-300 pb-24 font-sans selection:bg-brand-blue selection:text-white">
@@ -228,39 +192,15 @@ export default function AllWorksInfinite({ projects, onBack, onRefresh }: AllWor
           </div>
         ) : (
           <div className="py-24 text-center border-2 border-dashed border-slate-200 dark:border-neutral-800 rounded-[32px] bg-white/40 dark:bg-zinc-900/10 space-y-4">
-            <Layers className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto animate-bounce" />
+            <Layers className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto animate-pulse" />
             <div className="space-y-1.5 max-w-sm mx-auto">
               <h3 className="font-sans font-extrabold text-sm text-brand-navy dark:text-zinc-200">
-                The Showcase is Empty
+                No Showcase Items Found
               </h3>
               <p className="font-sans text-xs text-brand-slate dark:text-zinc-400 leading-relaxed">
-                All mock website data has been purged. Would you like to restore the default high-end portfolio templates?
+                There are no case studies matching the search query or active category filter.
               </p>
             </div>
-            
-            <button
-              onClick={handleRestoreShowcaseData}
-              disabled={isRestoring}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-blue hover:bg-brand-blue-hover text-white text-xs font-bold uppercase tracking-widest rounded-full shadow-xs transition-all cursor-pointer"
-            >
-              {isRestoring ? (
-                <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  Restoring...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  Restore Mock Showcase Data
-                </>
-              )}
-            </button>
-            
-            {restoreSuccess && (
-              <p className="text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
-                Successfully restored mock templates!
-              </p>
-            )}
           </div>
         )}
       </section>
