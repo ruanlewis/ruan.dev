@@ -10,7 +10,16 @@ dotenv.config();
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://zrjrtwccwpbwtkzzcvuc.supabase.co";
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyanJ0d2Njd3Bid3RrenpjdnVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyOTUyMTIsImV4cCI6MjA5OTg3MTIxMn0.6Ma7TpGXQxbQwqrVwWQQc9Ui5-Seho1YIUup5tgiAjY";
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabase: any = null;
+try {
+  if (SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_URL.startsWith("http")) {
+    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } else {
+    console.warn("Supabase credentials are not fully configured or invalid. Falling back to local JSON file persistence.");
+  }
+} catch (err) {
+  console.warn("Supabase client failed to initialize (will use local JSON file fallback):", err);
+}
 
 export const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
@@ -89,8 +98,12 @@ const UPLOADS_DIR = path.join(process.cwd(), "uploads");
 const UPLOADS_METADATA_FILE = path.join(process.cwd(), "custom_uploads.json");
 
 // Sync creation of uploads directory
-if (!fs.existsSync(UPLOADS_DIR)) {
-  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+try {
+  if (!fs.existsSync(UPLOADS_DIR)) {
+    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+  }
+} catch (err) {
+  console.warn("Could not create uploads directory (might be a read-only filesystem):", err);
 }
 
 // Serve uploaded image assets statically before any route handling
