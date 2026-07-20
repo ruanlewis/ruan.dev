@@ -91,11 +91,14 @@ function requireAdmin(req: express.Request, res: express.Response, next: express
 }
 
 // Path to persist project uploads, settings, and contact inquiries on the server instance
-const PROJECTS_FILE = path.join(process.cwd(), "custom_projects.json");
-const SETTINGS_FILE = path.join(process.cwd(), "settings.json");
-const INQUIRIES_FILE = path.join(process.cwd(), "inquiries.json");
-const UPLOADS_DIR = path.join(process.cwd(), "uploads");
-const UPLOADS_METADATA_FILE = path.join(process.cwd(), "custom_uploads.json");
+// On Vercel, use the writable /tmp directory to avoid EROFS (Read-only file system) errors
+const isVercel = process.env.VERCEL === "1" || process.env.VERCEL_ENV !== undefined;
+
+const PROJECTS_FILE = isVercel ? "/tmp/custom_projects.json" : path.join(process.cwd(), "custom_projects.json");
+const SETTINGS_FILE = isVercel ? "/tmp/settings.json" : path.join(process.cwd(), "settings.json");
+const INQUIRIES_FILE = isVercel ? "/tmp/inquiries.json" : path.join(process.cwd(), "inquiries.json");
+const UPLOADS_DIR = isVercel ? "/tmp/uploads" : path.join(process.cwd(), "uploads");
+const UPLOADS_METADATA_FILE = isVercel ? "/tmp/custom_uploads.json" : path.join(process.cwd(), "custom_uploads.json");
 
 // Sync creation of uploads directory
 try {
