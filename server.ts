@@ -100,13 +100,9 @@ const INQUIRIES_FILE = isVercel ? "/tmp/inquiries.json" : path.join(process.cwd(
 const UPLOADS_DIR = isVercel ? "/tmp/uploads" : path.join(process.cwd(), "uploads");
 const UPLOADS_METADATA_FILE = isVercel ? "/tmp/custom_uploads.json" : path.join(process.cwd(), "custom_uploads.json");
 
-// Sync creation of uploads directory
-try {
-  if (!fs.existsSync(UPLOADS_DIR)) {
-    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-  }
-} catch (err) {
-  console.warn("Could not create uploads directory (might be a read-only filesystem):", err);
+// Sync creation of uploads directory (skip on Vercel — read-only filesystem)
+if (process.env.VERCEL !== "1" && !fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 
 // Serve uploaded image assets statically before any route handling
