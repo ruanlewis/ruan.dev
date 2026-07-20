@@ -26,7 +26,7 @@ export default function Footer({ onAdminClick, onPrivacyClick }: FooterProps) {
           <span className="font-display font-black text-xl text-brand-navy dark:text-zinc-100 tracking-tighter cursor-pointer" onClick={handleScrollToTop}>
             ruan.dev
           </span>
-          <span className="font-mono text-[9px] text-[#94a3b8] dark:text-zinc-500 font-semibold bg-slate-50 dark:bg-zinc-900/60 border border-slate-100 dark:border-neutral-800/80 px-2 py-0.5 rounded-full uppercase">
+          <span className="font-mono text-[9px] text-[#94a3b8] dark:text-zinc-500 font-semibold bg-white/40 dark:bg-white/[0.04] backdrop-blur-md border border-white/40 dark:border-white/10 px-2.5 py-0.5 rounded-full uppercase shadow-xs">
             v1.0
           </span>
         </div>

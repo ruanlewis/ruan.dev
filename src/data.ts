@@ -1,8 +1,9 @@
 import { Project, WorkflowStep } from "./types";
-import nyEditImg from "./assets/images/new_york_edit_screenshot_1782938321194.jpg";
-import studioAxonImg from "./assets/images/studio_axon_screenshot_1782938345687.jpg";
-import novaSystemsImg from "./assets/images/nova_systems_screenshot_1782938360537.jpg";
-import muralisArtImg from "./assets/images/muralis_art_screenshot_1782938374136.jpg";
+
+const nyEditImg = "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1200&q=80";
+const studioAxonImg = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80";
+const novaSystemsImg = "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80";
+const muralisArtImg = "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=80";
 
 export const PROJECTS: Project[] = [
   {

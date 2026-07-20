@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @import "tailwindcss";
 
 @variant dark (&:where(.dark, .dark *));
@@ -20,6 +20,7 @@
 @theme {
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
   --font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: "Fraunces", "Playfair Display", serif;
 
   --color-brand-blue: #0066ff;
   --color-brand-blue-hover: #0055d5;
@@ -40,6 +41,164 @@
     color: var(--brand-navy);
     transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
   }
+}
+
+/* Premium pricing cards classes */
+.pricing-card {
+  border-radius: 28px;
+  padding: 36px 30px 32px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-width: 1px;
+}
+
+.pricing-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Core Pricing styling with dark mode adaptation */
+.pricing-card-core {
+  background: #ffffff;
+  border-color: #e4e2dc;
+}
+.dark .pricing-card-core {
+  background: #0f1013;
+  border-color: #27272a;
+}
+.pricing-card-core .badge-custom {
+  background: #f0efe9;
+  color: #7a7a76;
+}
+.dark .pricing-card-core .badge-custom {
+  background: #1c1d22;
+  color: #a1a1aa;
+}
+.pricing-card-core .btn-custom {
+  background: #f0efe9;
+  border-color: #e4e2dc;
+  color: #15171a;
+}
+.dark .pricing-card-core .btn-custom {
+  background: #1c1d22;
+  border-color: #27272a;
+  color: #f5f5f7;
+}
+
+/* Pro Pricing styling with dark mode adaptation */
+.pricing-card-pro {
+  background: #ffffff;
+  border-color: #dcdaf4;
+}
+.dark .pricing-card-pro {
+  background: #0f1013;
+  border-color: #2e2a52;
+}
+.pricing-card-pro .badge-custom {
+  background: #eeecfb;
+  color: #5b4bd6;
+}
+.dark .pricing-card-pro .badge-custom {
+  background: #252047;
+  color: #9f96f0;
+}
+.pricing-card-pro .btn-custom {
+  background: #eeecfb;
+  border-color: #dcdaf4;
+  color: #4b3fc4;
+}
+.dark .pricing-card-pro .btn-custom {
+  background: #252047;
+  border-color: #2e2a52;
+  color: #b9b2fa;
+}
+
+/* Studio Pricing styling with dark mode adaptation */
+.pricing-card-studio {
+  background: #ffffff;
+  border-color: #c9c2f7;
+  box-shadow: 0 10px 25px -10px rgba(91, 75, 214, 0.15);
+}
+.dark .pricing-card-studio {
+  background: #100f1c;
+  border-color: #4b3eb0;
+  box-shadow: 0 10px 30px -10px rgba(91, 75, 214, 0.25);
+}
+.pricing-card-studio .badge-custom {
+  background: #e4defb;
+  color: #4b3fc4;
+}
+.dark .pricing-card-studio .badge-custom {
+  background: #392b7a;
+  color: #c0b7fa;
+}
+.pricing-card-studio .btn-custom {
+  background: #5b4bd6;
+  border-color: #5b4bd6;
+  color: #ffffff;
+}
+.pricing-card-studio .btn-custom:hover {
+  background: #4b3fc4;
+}
+.dark .pricing-card-studio .btn-custom {
+  background: #5b4bd6;
+  border-color: #5b4bd6;
+  color: #ffffff;
+}
+.dark .pricing-card-studio .btn-custom:hover {
+  background: #6e5eeb;
+}
+
+/* Signature Pricing Styling - Elite Brushed Metal, foil edge */
+.pricing-card-signature {
+  background:
+    radial-gradient(140% 100% at 15% 0%, rgba(255,255,255,.10), transparent 55%),
+    repeating-linear-gradient(115deg, #2b2c30 0px, #313236 2px, #26272b 4px, #2f3034 6px),
+    linear-gradient(160deg,#1c1d20,#0c0d0f 70%);
+  border: 1px solid #48484c;
+  color: #e9e8e4;
+  box-shadow: 0 15px 35px -10px rgba(232, 217, 168, 0.08);
+  overflow: hidden;
+}
+.pricing-card-signature::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: 28px;
+  background: linear-gradient(120deg,#8a7a4a,#e8d9a8 25%,#6d5f38 45%,#f3e6b8 60%,#7a6a3f 80%,#c9b877);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.pricing-card-signature::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -30%;
+  width: 60%;
+  height: 220%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.08) 45%, rgba(255,255,255,.01) 52%, transparent);
+  transform: rotate(8deg);
+  pointer-events: none;
+}
+.pricing-card-signature .badge-custom {
+  background: linear-gradient(120deg,#8a7a4a,#e8d9a8,#6d5f38);
+  color: #2a2205;
+  font-weight: 700;
+}
+.pricing-card-signature .btn-custom {
+  background: linear-gradient(120deg,#e8d9a8,#c9b877 50%,#f3e6b8);
+  border: none;
+  color: #241d05;
+  font-weight: 700;
+  box-shadow: 0 4px 14px -4px rgba(201,184,119,.5);
+}
+.pricing-card-signature .btn-custom:hover {
+  filter: brightness(1.08);
+  transform: translateY(-0.5px);
 }
 
 /* Custom transitions and scroll behaviors */

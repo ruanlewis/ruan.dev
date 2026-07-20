@@ -1,10 +1,27 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Compass, Grid3X3, Maximize2, Type, AlignLeft, Cpu, ChevronRight, Check } from "lucide-react";
+import { Compass, Sparkles, Sliders, Type, Database, Check, Layers, RefreshCw } from "lucide-react";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 
+interface ScaleStep {
+  id: string;
+  className: string;
+  label: string;
+  px: string;
+  multiplier: string;
+  useCase: string;
+  contrast: string;
+  tracking: string;
+  lineHeight: string;
+  description: string;
+  sampleQuote: string;
+}
+
 export default function Philosophy() {
-  const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [activeIndex, setActiveIndex] = useState<number>(4); // Default to 's5' (Title 63px) as active, matching the user mockup
+  const [customText, setCustomText] = useState<string>("");
+  const [useSerif, setUseSerif] = useState<boolean>(true);
+  const [showSpecs, setShowSpecs] = useState<boolean>(false);
 
   const customPills = [
     "Swiss Typographic Style",
@@ -13,381 +30,390 @@ export default function Philosophy() {
     "Digital Creative Direction"
   ];
 
-  const principles = [
+  const SCALE_STEPS: ScaleStep[] = [
     {
-      id: 1,
-      title: "Grid Discipline",
-      category: "ALIGNMENT & STRUCTURE",
-      subtitle: "SYSTEMATIC COLUMN SYSTEM",
-      icon: Grid3X3,
-      copy: "Rigid grid alignments organize layout components onto structural guidelines to ensure clean hierarchy and absolute clarity.",
-      specCode: "GRID_SYS_12C",
-      stats: {
-        resolution: "12 Columns",
-        margin: "80px Margin",
-        gutter: "24px Gutter",
-        utilization: "100% Locked"
-      }
+      id: "s1",
+      className: "s1",
+      label: "Small print",
+      px: "12px",
+      multiplier: "1.00x",
+      useCase: "System captions & metadata",
+      contrast: "4.5:1",
+      tracking: "+0.04em",
+      lineHeight: "16px",
+      description: "Optimized for extreme utility and dense data density under challenging layouts.",
+      sampleQuote: "Design systems bridge the gap between creative chaos and engineered order."
     },
     {
-      id: 2,
-      title: "Negative Space",
-      category: "BALANCE & CONTRAST",
-      subtitle: "GOLDEN RATIO PROPORTIONS",
-      icon: Maximize2,
-      copy: "Deliberate empty space serves as an active driver of focus, organizing complex information with composure and ease.",
-      specCode: "SPACE_RATIO_1.618",
-      stats: {
-        voidRatio: "82.4% Area",
-        focalWeight: "17.6% Focus",
-        caliper: "Dynamic Spring",
-        absorption: "High Eye-Ease"
-      }
+      id: "s2",
+      className: "s2",
+      label: "Body text",
+      px: "16px",
+      multiplier: "1.33x",
+      useCase: "Long-form editorial descriptions",
+      contrast: "7.0:1",
+      tracking: "-0.01em",
+      lineHeight: "24px",
+      description: "Engineered with spacious negative space for balanced column alignment and extreme legibility.",
+      sampleQuote: "Order is not pressure, it is visual peace. Every element has its precise coordinate."
     },
     {
-      id: 3,
-      title: "Typographic Scale",
-      category: "HIERARCHY & SIZE",
-      subtitle: "INTELLIGENT FONT CONTRAST",
-      icon: Type,
-      copy: "Proportional body heights and weights define clear structural rhythm, guiding readers down the page effortlessly.",
-      specCode: "TYPE_SCALE_PRO",
-      stats: {
-        scaleFactor: "1.618 Major",
-        displayWeight: "900 Black",
-        bodyWeight: "400 Normal",
-        contrastIndex: "8.4x High"
-      }
+      id: "s3",
+      className: "s3",
+      label: "Subheading",
+      px: "24px",
+      multiplier: "2.00x",
+      useCase: "Section headers & structural anchors",
+      contrast: "11.2:1",
+      tracking: "-0.02em",
+      lineHeight: "32px",
+      description: "Generates strict structural visual pathways, introducing key layout partitions.",
+      sampleQuote: "Form follows function, but aesthetic precision is a crucial function itself."
     },
     {
-      id: 4,
-      title: "Swiss Alignment",
-      category: "AXIAL PLACEMENT",
-      subtitle: "STRICT VERTICAL ANCHORS",
-      icon: AlignLeft,
-      copy: "Aligning typography cleanly flush-left creates crisp focal points, establishing immediate visual authority.",
-      specCode: "AXIAL_ALIGN_X0",
-      stats: {
-        anchorPoints: "3 Key Anchors",
-        driftMargin: "± 0.00px",
-        readingVector: "F-Layout Path",
-        discipline: "Absolute Flush"
-      }
+      id: "s4",
+      className: "s4",
+      label: "Heading",
+      px: "39px",
+      multiplier: "3.25x",
+      useCase: "Layout showcases & callouts",
+      contrast: "14.5:1",
+      tracking: "-0.03em",
+      lineHeight: "48px",
+      description: "Combines powerful mathematical scale with tight kerning for premium visual authority.",
+      sampleQuote: "Consistency is the absolute core of typographic credibility."
+    },
+    {
+      id: "s5",
+      className: "s5",
+      label: "Title",
+      px: "63px",
+      multiplier: "5.25x",
+      useCase: "Hero displays & brand headlines",
+      contrast: "18.0:1",
+      tracking: "-0.04em",
+      lineHeight: "72px",
+      description: "A bold, monumental visual statement. Balanced weight proportion designed to command focus.",
+      sampleQuote: "Structure creates absolute confidence."
     }
   ];
 
-  const activePrinciple = principles[activeIndex];
+  const activeStep = SCALE_STEPS[activeIndex];
+
+  const handleResetCustomText = () => {
+    setCustomText("");
+  };
 
   return (
     <section 
       id="about" 
-      className="bg-gradient-to-b from-white via-[#FAF9F6] to-white dark:from-[#08080a] dark:via-[#0c0c0e] dark:to-[#08080a] relative overflow-visible border-t border-border-light dark:border-neutral-900/60"
+      className="bg-gradient-to-b from-white via-[#FAF9F6] to-white dark:from-[#08080a] dark:via-[#0c0c0e] dark:to-[#08080a] relative overflow-visible border-t border-border-light dark:border-neutral-900/60 py-24 sm:py-36 transition-all duration-500"
     >
-      <ContainerScroll
-        titleComponent={
-          <div className="max-w-4xl mx-auto space-y-4 text-center px-6 select-none">
-            <span className="font-sans text-xs font-bold uppercase tracking-widest text-[#0066ff] flex items-center justify-center gap-1.5 leading-none">
-              <Compass className="w-4 h-4 text-[#0066ff] animate-spin-slow" />
-              THE SPECIFICATION SHEETS
-            </span>
-            <h2 className="font-sans font-extrabold text-4xl sm:text-5xl md:text-6xl text-[#1d1d1f] dark:text-zinc-100 tracking-tighter leading-[1.08] mt-2">
-              Clarity. Engineered with <br className="hidden sm:inline" /> mathematical discipline.
-            </h2>
-            <p className="font-sans text-sm sm:text-base md:text-lg text-brand-slate dark:text-zinc-400 max-w-2xl mx-auto font-normal leading-relaxed pt-2">
-              Moving past fleeting visual trends. Ruan's design style merges the rigid grid focus of Swiss typography with ultra-high-fidelity interactive technology.
-            </p>
-          </div>
-        }
-      >
-        {/* INTERACTIVE SPECIFICATION LAB WORKSPACE (CAD-inspired OS mockup) */}
-        <div className="w-full h-full bg-[#18181b] flex flex-col overflow-hidden text-neutral-200">
-          
-          {/* macOS Title Bar Header */}
-          <div className="h-10 border-b border-neutral-800 bg-neutral-900/90 flex items-center justify-between px-4 shrink-0 select-none">
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-red-500/80" />
-              <span className="w-3 h-3 rounded-full bg-yellow-500/80" />
-              <span className="w-3 h-3 rounded-full bg-green-500/80" />
-            </div>
-            
-            <div className="h-6 px-4 bg-neutral-950/80 rounded-md border border-neutral-800/80 flex items-center justify-center text-xs font-mono tracking-tight text-neutral-300 w-1/2 sm:w-1/3">
-              ruan.dev // specifications // {activePrinciple.specCode}
-            </div>
+      <div className="max-w-4xl mx-auto space-y-8 text-center px-6 select-none pb-12">
+        <div className="inline-flex items-center justify-center gap-2 font-mono text-[11px] font-medium tracking-[0.12em] text-[#0066ff] dark:text-[#5b4bd6] uppercase">
+          <svg className="w-3.5 h-3.5 animate-spin-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 3v18M3 12h18" />
+          </svg>
+          The specification sheets
+        </div>
+        
+        <h2 className="font-sans font-bold text-4xl sm:text-5xl md:text-6xl text-neutral-900 dark:text-zinc-100 tracking-tighter leading-[1.08] mt-2">
+          Clarity. Engineered with <br className="hidden sm:inline" /> mathematical discipline.
+        </h2>
+        
+        <p className="font-sans text-sm sm:text-base md:text-lg text-slate-500 dark:text-zinc-400 max-w-2xl mx-auto font-normal leading-relaxed pt-2">
+          Moving past fleeting visual trends. Ruan's design style pairs a{" "}
+          <b className="text-neutral-900 dark:text-white font-semibold">strict, orderly grid</b> with{" "}
+          <b className="text-neutral-900 dark:text-white font-semibold">polished, precise</b> interactive work.
+        </p>
 
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#0066ff] animate-pulse" />
-              <span className="text-[11px] font-mono font-bold text-[#0066ff] hidden sm:inline">LIVE_DIAGRAM</span>
-            </div>
-          </div>
+        {/* Spacious, premium button to reveal the lab */}
+        <div className="pt-4">
+          <button
+            onClick={() => setShowSpecs((prev) => !prev)}
+            className="group relative inline-flex items-center gap-3 px-6 py-3.5 border border-zinc-200/50 dark:border-white/10 hover:border-zinc-300 dark:hover:border-white/20 rounded-full font-mono text-xs font-semibold tracking-wider uppercase transition-all duration-300 bg-white/40 dark:bg-white/[0.04] backdrop-blur-md hover:bg-white/60 dark:hover:bg-white/[0.08] text-zinc-800 dark:text-zinc-200 shadow-sm hover:shadow-[0_8px_32px_rgba(0,0,0,0.06)] active:scale-98 cursor-pointer"
+          >
+            <span className={`w-2 h-2 rounded-full ${showSpecs ? "bg-red-500 animate-pulse" : "bg-[#0066ff]"} transition-colors duration-300`} />
+            <span>{showSpecs ? "Close Specification Sheets" : "Open Specification Sheets"}</span>
+          </button>
+        </div>
+      </div>
 
-          {/* Core Sidebar + Studio Canvas Grid */}
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-y-auto md:overflow-hidden min-h-0">
-            
-            {/* VIEWPORT CANVAS (Columns 1-7) */}
-            <div className="md:col-span-7 bg-[#0f0f11] p-4 sm:p-6 flex flex-col justify-between border-b md:border-b-0 md:border-r border-neutral-800 min-h-[300px] md:min-h-0 relative">
-              
-              {/* Grid calibration corner lines */}
-              <div className="absolute top-2 left-2 w-3 h-3 border-t border-l border-neutral-800 pointer-events-none" />
-              <div className="absolute top-2 right-2 w-3 h-3 border-t border-r border-neutral-800 pointer-events-none" />
-              <div className="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-neutral-800 pointer-events-none" />
-              <div className="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-neutral-800 pointer-events-none" />
+      <AnimatePresence initial={false}>
+        {showSpecs && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden"
+          >
+            <ContainerScroll
+              titleComponent={null}
+            >
+              {/* INTERACTIVE SPECIFICATION LAB WORKSPACE (Refined Dark CAD Layout) */}
+              <div className="w-full h-full bg-[#0e0f11] flex flex-col overflow-hidden text-[#f4f3ef]">
+                
+                {/* macOS Style Header Nav */}
+                <div className="h-12 border-b border-white/10 bg-black/40 flex items-center justify-between px-5 shrink-0 select-none">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-[#ff5f56]" />
+                    <span className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+                    <span className="w-3 h-3 rounded-full bg-[#27c93f]" />
+                  </div>
+                  
+                  <div className="h-7 px-4 bg-black/60 rounded-md border border-white/5 flex items-center justify-center text-[11px] font-mono tracking-tight text-[#8c8d92] w-1/2 sm:w-1/3">
+                    ruan.dev // specifications // font_scale_system
+                  </div>
 
-              <div className="text-left select-none">
-                <span className="font-mono text-xs text-[#0066ff] bg-[#0066ff]/10 px-3 py-1 rounded-full border border-[#0066ff]/25 font-bold">
-                  MODEL // {activePrinciple.specCode}
-                </span>
-              </div>
+                  <div className="flex items-center gap-2 font-mono">
+                    <span className="w-2 h-2 rounded-full bg-[#6de08a] animate-pulse" />
+                    <span className="text-[10px] tracking-wider text-[#6de08a] uppercase hidden sm:inline font-bold">MEASURING_LIVE</span>
+                  </div>
+                </div>
 
-              {/* Dynamic Schematic Graphic Area */}
-              <div className="flex-1 flex items-center justify-center relative my-4 min-h-[140px] sm:min-h-[180px]">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activePrinciple.id}
-                    initial={{ opacity: 0, scale: 0.96 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.96 }}
-                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                    className="w-full h-full flex items-center justify-center absolute inset-0"
-                  >
-                    {/* GRID DISCIPLINE */}
-                    {activePrinciple.id === 1 && (
-                      <div className="w-full max-w-[340px] px-4 space-y-4">
-                        <div className="grid grid-cols-12 gap-1.5 w-full h-24 relative bg-neutral-900/40 p-2.5 rounded-lg border border-neutral-800/60">
-                          {Array.from({ length: 12 }).map((_, idx) => (
-                            <motion.div
-                              key={idx}
-                              initial={{ height: 0 }}
-                              animate={{ height: "100%" }}
-                              transition={{ delay: idx * 0.02, duration: 0.4 }}
-                              className={`rounded-sm relative ${
-                                idx === 2 || idx === 3 || idx === 7 || idx === 8
-                                  ? "bg-[#0066ff]/25 border border-[#0066ff]/40"
-                                  : "bg-neutral-800/40 border border-neutral-800/80"
+                {/* Split Interactive Blueprint Columns */}
+                <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-y-auto lg:overflow-hidden min-h-0">
+                  
+                  {/* LEFT COLUMN: THE SIZES GRID (6/12) */}
+                  <div className="lg:col-span-7 bg-black/20 p-6 sm:p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/10 overflow-y-auto">
+                    <div>
+                      <div className="flex items-center justify-between mb-6 select-none">
+                        <div className="space-y-1">
+                          <span className="font-mono text-[10px] text-[#8c8d92] uppercase tracking-widest block font-bold">THE SIZES //</span>
+                          <span className="text-xs text-white/90 font-semibold block">Typographic Scale Index</span>
+                        </div>
+                        <span className="font-mono text-[9px] bg-[#0066ff]/10 text-[#5b4bd6] dark:text-[#a89bf0] px-2.5 py-1 rounded border border-[#0066ff]/20 font-bold uppercase tracking-wider">
+                          Ratio // 1.618 Major
+                        </span>
+                      </div>
+
+                      {/* Sizer Scale rows */}
+                      <div className="space-y-2.5">
+                        {SCALE_STEPS.map((step, idx) => {
+                          const isActive = activeIndex === idx;
+                          return (
+                            <button
+                              key={step.id}
+                              onClick={() => setActiveIndex(idx)}
+                              className={`w-full group relative rounded-xl p-4 text-left flex items-center justify-between border transition-all duration-300 cursor-pointer ${
+                                isActive
+                                  ? "bg-[#0066ff]/8 border-[#0066ff]/40 shadow-[0_4px_20px_rgba(36,81,255,0.12)]"
+                                  : "bg-transparent border-white/5 hover:bg-white/[0.02] hover:border-white/10"
                               }`}
                             >
-                              <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 font-mono text-[10px] text-neutral-400 font-bold">
-                                {idx + 1}
-                              </span>
-                            </motion.div>
-                          ))}
+                              {/* Interactive glow accent on active line */}
+                              {isActive && (
+                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#2451ff] rounded-l-xl" />
+                              )}
+
+                              <div className="flex items-center gap-6 min-w-0">
+                                {/* Display Lettering Box - Rendered dynamically with strict mathematical sizing! */}
+                                <div className="w-14 h-14 flex items-center justify-center shrink-0 bg-white/5 rounded-lg border border-white/10 group-hover:border-white/20 transition-colors select-none">
+                                  <span 
+                                    className="font-serif font-semibold text-white tracking-tight"
+                                    style={{ 
+                                      fontSize: step.id === 's1' ? '12px' : step.id === 's2' ? '16px' : step.id === 's3' ? '22px' : step.id === 's4' ? '30px' : '44px',
+                                      lineHeight: 1
+                                    }}
+                                  >
+                                    Aa
+                                  </span>
+                                </div>
+
+                                <div className="space-y-0.5">
+                                  <span className="font-mono text-[9px] text-[#8c8d92] uppercase tracking-wider block font-bold">
+                                    {step.id === 's1' ? 'SMALL' : step.id === 's2' ? 'BODY' : step.id === 's3' ? 'SUBHEAD' : step.id === 's4' ? 'HEAD' : 'HERO_TITLE'}
+                                  </span>
+                                  <span className={`text-[14px] font-semibold transition-colors block ${
+                                    isActive ? "text-[#8fa8ff]" : "text-white/80 group-hover:text-white"
+                                  }`}>
+                                    {step.label}
+                                  </span>
+
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-4">
+                                <span className="font-mono text-[11px] text-[#8c8d92] uppercase tracking-wide">
+                                  {step.px}
+                                </span>
+                                
+                                {/* Arrow or Check mark indicator */}
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center border transition-all ${
+                                  isActive 
+                                    ? "bg-[#2451ff] border-[#2451ff] text-white" 
+                                    : "border-white/10 text-transparent group-hover:border-white/30 group-hover:text-white/40"
+                                }`}>
+                                  <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Bottom Specs Statement block */}
+                    <div className="border-t border-white/10 pt-5 mt-6 flex flex-col sm:flex-row justify-between gap-3 text-left font-mono text-[11px] text-[#8c8d92] select-none">
+                      <div>
+                        <span className="text-white/80 font-bold block mb-0.5 uppercase tracking-wider">Visual Mathematics ruleset</span>
+                        <span>Every step is calculated proportionally to establish clear typographic pacing.</span>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* RIGHT COLUMN: ACTIVE SCALE SPECS & LIVE PREVIEW (5/12) */}
+                  <div className="lg:col-span-5 bg-black/40 p-6 sm:p-8 flex flex-col justify-between min-h-0 overflow-y-auto">
+                    
+                    <div className="space-y-6">
+                      
+                      {/* Active Parameters Heading */}
+                      <div className="flex items-center justify-between select-none border-b border-white/10 pb-4">
+                        <div className="space-y-0.5">
+                          <span className="font-mono text-[10px] text-[#8c8d92] uppercase tracking-widest block font-bold">ACTIVE PARAMETERS //</span>
+                          <h3 className="text-sm font-bold text-white uppercase tracking-wider">{activeStep.label}</h3>
                         </div>
-                        <div className="flex justify-between items-center text-left font-mono text-[10px] text-neutral-300 border-t border-neutral-800 pt-2">
-                          <div>
-                            <p className="text-[#0066ff] font-bold tracking-wider">GRID ANCHOR: ACTIVE_</p>
-                            <p className="text-neutral-400">12 Column Matrix System</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-neutral-400">Gutter: 24px / Margins: 80px</p>
-                            <p className="text-[#0066ff] font-bold">LOCKED 100%</p>
-                          </div>
+                        
+                        {/* Font pairing toggle */}
+                        <div className="flex items-center bg-white/5 rounded-lg p-0.5 border border-white/10">
+                          <button 
+                            onClick={() => setUseSerif(true)}
+                            className={`px-2 py-1 text-[9px] font-mono uppercase tracking-wider rounded font-bold transition-all cursor-pointer ${
+                              useSerif ? "bg-white/10 text-white" : "text-[#8c8d92] hover:text-white"
+                            }`}
+                          >
+                            Serif
+                          </button>
+                          <button 
+                            onClick={() => setUseSerif(false)}
+                            className={`px-2 py-1 text-[9px] font-mono uppercase tracking-wider rounded font-bold transition-all cursor-pointer ${
+                              !useSerif ? "bg-white/10 text-white" : "text-[#8c8d92] hover:text-white"
+                            }`}
+                          >
+                            Sans
+                          </button>
                         </div>
                       </div>
-                    )}
 
-                    {/* NEGATIVE SPACE */}
-                    {activePrinciple.id === 2 && (
-                      <div className="w-full max-w-[340px] px-4 space-y-3">
-                        <div className="border border-neutral-800 bg-neutral-900/40 rounded-xl aspect-[16/9] p-4 relative flex items-center justify-center overflow-hidden">
-                          {/* Radial schematic guide lines */}
-                          <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                            <line x1="10%" y1="50%" x2="44%" y2="50%" stroke="#0066ff" strokeWidth="0.75" strokeDasharray="3,3" opacity="0.6" />
-                            <line x1="50%" y1="10%" x2="50%" y2="44%" stroke="#0066ff" strokeWidth="0.75" strokeDasharray="3,3" opacity="0.6" />
-                            <line x1="56%" y1="50%" x2="90%" y2="50%" stroke="#0066ff" strokeWidth="0.75" strokeDasharray="3,3" opacity="0.6" />
-                            <line x1="50%" y1="56%" x2="50%" y2="90%" stroke="#0066ff" strokeWidth="0.75" strokeDasharray="3,3" opacity="0.6" />
-                          </svg>
-
-                          <div className="relative">
-                            <motion.div
-                              animate={{ scale: [1, 1.25, 1] }}
-                              transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-                              className="absolute -inset-3 rounded-full bg-[#0066ff]/15"
-                            />
-                            <div className="w-2.5 h-2.5 bg-[#0066ff] rounded-full relative z-10" />
-                          </div>
-
-                          <span className="absolute left-[12%] top-[54%] font-mono text-[9px] text-neutral-300 uppercase font-semibold">
-                            VOID: 160PX
+                      {/* DYNAMIC LIVE PREVIEW DISPLAY BOX */}
+                      <div className="bg-black/60 rounded-xl p-5 border border-white/10 relative overflow-hidden flex flex-col justify-between min-h-[160px] group">
+                        <div className="flex justify-between items-center mb-3 select-none">
+                          <span className="font-mono text-[9px] text-[#2451ff] font-bold tracking-widest uppercase">
+                            PREVIEW AREA // SIZE_TEST_LIVE
                           </span>
-                          <span className="absolute right-[12%] top-[54%] font-mono text-[9px] text-neutral-300 uppercase font-semibold">
-                            VOID: 160PX
-                          </span>
-                          <span className="absolute left-[53%] top-[15%] font-mono text-[9px] text-[#0066ff] uppercase font-bold tracking-wider">
-                            FOCAL_PLANE_
+                          <span className="font-mono text-[9px] text-[#8c8d92] uppercase font-bold">
+                            {activeStep.px} @ {activeStep.lineHeight}
                           </span>
                         </div>
-                        <div className="flex justify-between items-center text-left font-mono text-[10px] text-neutral-300">
-                          <span className="text-[#0066ff] font-bold tracking-wider">GOLDEN_RATIO_CALCULATED</span>
-                          <span className="text-neutral-400 font-semibold">82.4% DEVIATION VACANCY</span>
+
+                        {/* Real-time Dynamic Text Render */}
+                        <div className="flex-1 flex items-center justify-start py-2">
+                          <AnimatePresence mode="wait">
+                            <motion.p
+                              key={activeStep.id + "_" + useSerif + "_" + (customText !== "")}
+                              initial={{ opacity: 0, y: 4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -4 }}
+                              transition={{ duration: 0.25 }}
+                              className={`text-left tracking-tight text-white transition-all break-words w-full ${
+                                useSerif ? "font-serif font-medium" : "font-sans font-medium"
+                              }`}
+                              style={{
+                                fontSize: activeStep.px,
+                                lineHeight: activeStep.lineHeight,
+                                letterSpacing: activeStep.tracking
+                              }}
+                            >
+                              {customText.trim() !== "" ? customText : activeStep.sampleQuote}
+                            </motion.p>
+                          </AnimatePresence>
+                        </div>
+
+                        {/* Active Indicator details */}
+                        <div className="flex justify-between items-center mt-3 border-t border-white/5 pt-2.5 select-none">
+                          <span className="font-mono text-[9px] text-[#8c8d92]">
+                            Usage: <span className="text-white/80">{activeStep.useCase}</span>
+                          </span>
                         </div>
                       </div>
-                    )}
 
-                    {/* TYPOGRAPHIC SCALE */}
-                    {activePrinciple.id === 3 && (
-                      <div className="w-full max-w-[340px] px-4 space-y-3">
-                        <div className="bg-neutral-900/40 border border-neutral-800 rounded-xl p-4 space-y-3 text-left">
-                          <div className="space-y-0.5">
-                            <div className="flex justify-between items-center">
-                              <span className="font-mono text-[9px] text-[#0066ff] font-bold">DISPLAY: 96PX</span>
-                              <span className="font-mono text-[9px] text-neutral-300">W: 900 BLACK</span>
-                            </div>
-                            <h1 className="font-sans font-black text-2xl text-white tracking-tighter leading-none">
-                              Display Aa
-                            </h1>
-                          </div>
-                          <div className="border-t border-neutral-800 pt-2.5 space-y-1.5">
-                            <div className="flex justify-between items-center">
-                              <span className="font-mono text-[9px] text-[#0066ff] font-bold">BODY: 14PX</span>
-                              <span className="font-mono text-[9px] text-neutral-300">W: 400 REGULAR</span>
-                            </div>
-                            <p className="font-sans text-xs text-neutral-300 leading-relaxed">
-                              High typographic contrast ensures clear structural reading speeds, making informational hierarchy instantly self-evident.
-                            </p>
-                          </div>
+                      {/* INTERACTIVE CUSTOM TYPE TESTING BLOCK */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="font-mono text-[9px] text-[#8c8d92] uppercase tracking-widest block font-bold select-none">
+                            Type Custom Spec Word
+                          </label>
+                          {customText && (
+                            <button 
+                              onClick={handleResetCustomText}
+                              className="text-[9px] font-mono text-[#8c8d92] hover:text-white uppercase tracking-wider flex items-center gap-1 cursor-pointer"
+                            >
+                              <RefreshCw className="w-2.5 h-2.5" /> Clear
+                            </button>
+                          )}
                         </div>
-                        <div className="flex justify-between items-center text-left font-mono text-[10px] text-neutral-300 font-semibold">
-                          <span className="text-neutral-400">SCALE: 1.618 x RATIO</span>
-                          <span className="text-[#0066ff] font-bold">CONTRAST FACTOR: HIGH (8.4x)</span>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* SWISS ALIGNMENT */}
-                    {activePrinciple.id === 4 && (
-                      <div className="w-full max-w-[340px] px-4">
-                        <div className="bg-neutral-900/40 border border-neutral-800 rounded-xl p-4 relative overflow-hidden text-left">
-                          <motion.div
-                            animate={{ opacity: [0.2, 0.7, 0.2] }}
-                            transition={{ repeat: Infinity, duration: 1.8 }}
-                            className="absolute top-0 bottom-0 left-5 w-[1.5px] bg-[#0066ff] z-10"
+                        <div className="relative">
+                          <input
+                            type="text"
+                            placeholder="Type custom text to preview layout..."
+                            value={customText}
+                            onChange={(e) => setCustomText(e.target.value)}
+                            maxLength={80}
+                            className="w-full bg-black/40 border border-white/10 rounded-lg px-3.5 py-2 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#2451ff] focus:ring-1 focus:ring-[#2451ff]/30 transition-all font-sans"
                           />
-                          <div className="pl-5 space-y-2.5">
-                            <div>
-                              <span className="font-mono text-[9px] text-[#0066ff] font-bold block mb-0.5 tracking-wider">SNAP X_ANCHOR = 0.00PX</span>
-                              <h4 className="font-sans font-bold text-sm text-white leading-none">
-                                Axial Flush Placement
-                              </h4>
-                            </div>
-                            <p className="font-sans text-xs text-neutral-300 leading-relaxed">
-                              By snapping type components flush-left, a clean vertical visual line is formed, enabling highly predictable reading routes.
-                            </p>
-                          </div>
                         </div>
                       </div>
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-              </div>
 
-              {/* Bottom live stats telemetry bar */}
-              <div className="grid grid-cols-4 gap-2 border-t border-neutral-800/80 pt-3 text-left font-mono select-none">
-                {Object.entries(activePrinciple.stats).map(([k, v]) => (
-                  <div key={k} className="space-y-0.5 min-w-0">
-                    <span className="text-[9px] uppercase text-neutral-400 tracking-wider font-bold block truncate">
-                      {k.replace(/([A-Z])/g, "_$1")}
-                    </span>
-                    <span className="text-xs text-[#0066ff] font-bold block truncate">
-                      {v}
-                    </span>
+                      {/* THE CAPTION BLOCK */}
+                      <div className="space-y-1.5 text-left border-t border-white/10 pt-5 select-none">
+                        <div className="font-sans text-xs font-semibold text-white">Every size follows one rule</div>
+                        <p className="text-[11.5px] text-[#8c8d92] leading-relaxed">
+                          {activeStep.description} This mathematical discipline aligns columns to strict visual rhythm guidelines perfectly.
+                        </p>
+                      </div>
+
+                    </div>
+
+                    {/* THE STATS GRID - matching user mockup */}
+                    <div className="grid grid-cols-4 gap-0.5 bg-white/10 rounded-xl overflow-hidden mt-6 border border-white/10 select-none shrink-0 font-mono">
+                      <div className="bg-black/60 p-3.5 text-left">
+                        <div className="text-[9px] uppercase tracking-wider text-[#8c8d92] mb-1.5 font-bold">Sizes</div>
+                        <div className="text-xs font-semibold text-[#2451ff]">5 Step</div>
+                      </div>
+                      <div className="bg-black/60 p-3.5 text-left">
+                        <div className="text-[9px] uppercase tracking-wider text-[#8c8d92] mb-1.5 font-bold">Multiplier</div>
+                        <div className="text-xs font-semibold text-[#2451ff]">{activeStep.multiplier}</div>
+                      </div>
+                      <div className="bg-black/60 p-3.5 text-left">
+                        <div className="text-[9px] uppercase tracking-wider text-[#8c8d92] mb-1.5 font-bold">Contrast</div>
+                        <div className="text-xs font-semibold text-[#2451ff]">{activeStep.contrast}</div>
+                      </div>
+                      <div className="bg-black/60 p-3.5 text-left">
+                        <div className="text-[9px] uppercase tracking-wider text-[#8c8d92] mb-1.5 font-bold">Line Ht</div>
+                        <div className="text-xs font-semibold text-[#2451ff]">{activeStep.lineHeight}</div>
+                      </div>
+                    </div>
+
                   </div>
-                ))}
-              </div>
 
-            </div>
-
-            {/* CONTROLS SIDEBAR PANEL (Columns 8-12) */}
-            <div className="md:col-span-5 bg-[#141416] p-4 sm:p-5 flex flex-col justify-between min-h-[260px] md:min-h-0 select-none">
-              
-              <div className="space-y-3.5">
-                <span className="font-mono text-[11px] font-bold text-neutral-400 uppercase tracking-widest block px-1">
-                  Blueprint Parameters
-                </span>
-
-                <div className="space-y-2.5">
-                  {principles.map((pr, index) => {
-                    const Icon = pr.icon;
-                    const isCurrent = activeIndex === index;
-
-                    return (
-                      <button
-                        key={pr.id}
-                        onClick={() => setActiveIndex(index)}
-                        className={`w-full group rounded-xl p-3 border text-left flex items-start gap-3 transition-all duration-300 cursor-pointer ${
-                          isCurrent
-                            ? "bg-neutral-900 border-[#0066ff]/40 shadow-md ring-1 ring-[#0066ff]/20"
-                            : "bg-transparent border-transparent hover:bg-neutral-900/40 hover:border-neutral-800/50"
-                        }`}
-                      >
-                        {/* Parameter icon */}
-                        <div 
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300 ${
-                            isCurrent 
-                              ? "bg-[#0066ff] text-white shadow-md shadow-[#0066ff]/25" 
-                              : "bg-neutral-800 text-neutral-400 group-hover:text-white group-hover:bg-neutral-700"
-                          }`}
-                        >
-                          <Icon className="w-4 h-4" />
-                        </div>
-
-                        {/* Title block */}
-                        <div className="space-y-0.5 font-sans min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-[10px] font-bold text-[#0066ff] tracking-wider truncate">
-                              {pr.category}
-                            </span>
-                            <span className="font-mono text-[9px] text-neutral-400 shrink-0 font-medium">
-                              {pr.specCode}
-                            </span>
-                          </div>
-                          
-                          <h4 className={`text-xs font-semibold tracking-tight transition-colors ${
-                            isCurrent ? "text-white" : "text-neutral-300 group-hover:text-white"
-                          }`}>
-                            {pr.title}
-                          </h4>
-
-                          <p className="text-xs text-neutral-300 leading-normal font-normal line-clamp-1 pt-0.5">
-                            {isCurrent ? pr.copy : pr.subtitle}
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  })}
                 </div>
+
               </div>
+            </ContainerScroll>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-              {/* Specs disclaimer container */}
-              <div className="bg-neutral-900 border border-neutral-800/60 rounded-xl p-3 mt-4 flex items-center justify-between">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-7 h-7 bg-[#0066ff]/10 border border-[#0066ff]/20 rounded-lg flex items-center justify-center text-[#0066ff] shrink-0">
-                    <Cpu className="w-3.5 h-3.5" />
-                  </div>
-                  <div className="text-left font-sans min-w-0">
-                    <p className="text-[10px] font-bold text-white uppercase tracking-wider leading-none">
-                      ENGINEERING FOCUS
-                    </p>
-                    <p className="text-xs text-neutral-300 mt-0.5 truncate">
-                      Rigid grid mathematics ruleset.
-                    </p>
-                  </div>
-                </div>
-                <ChevronRight className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-      </ContainerScroll>
-
-      {/* Philosophy Spec Pills footer section */}
-      <div className="w-full max-w-7xl mx-auto px-6 md:px-12 pb-20 mt-8 md:mt-12 relative z-10 text-center">
+      {/* Swiss spec badges footer container */}
+      <div className="w-full max-w-7xl mx-auto px-6 md:px-12 pb-8 mt-12 md:mt-20 relative z-10 text-center">
         <div className="flex flex-wrap gap-2.5 justify-center">
           {customPills.map((pill, idx) => (
             <span
               key={idx}
-              className="px-4.5 py-2 bg-white dark:bg-zinc-900/80 hover:bg-neutral-50 dark:hover:bg-zinc-800 border border-border-light dark:border-neutral-800 font-sans text-xs font-semibold text-brand-slate dark:text-zinc-300 rounded-full transition-all duration-300 cursor-default select-none shadow-xs"
+              className="px-4.5 py-2 bg-white/40 dark:bg-white/[0.04] backdrop-blur-md hover:bg-white/60 dark:hover:bg-white/[0.08] border border-white/40 dark:border-white/10 font-sans text-xs font-semibold text-brand-slate dark:text-zinc-300 rounded-full transition-all duration-300 cursor-default select-none shadow-[0_8px_32px_rgba(0,0,0,0.03)]"
             >
               {pill}
             </span>
@@ -397,3 +423,4 @@ export default function Philosophy() {
     </section>
   );
 }
+

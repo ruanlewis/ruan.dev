@@ -3,7 +3,7 @@ import { WORKFLOW } from "../data";
 
 export default function Workflow() {
   return (
-    <section id="process" className="py-24 md:py-32 bg-white dark:bg-[#08080a] relative transition-colors duration-300">
+    <section id="process" className="py-32 md:py-40 bg-white dark:bg-[#08080a] relative transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         
         {/* Workflow Line Title */}

@@ -5,23 +5,28 @@
 
 import { useState, useEffect } from "react";
 import { Sun, Moon } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import DynamicIsland from "./components/DynamicIsland";
 import Hero from "./components/Hero";
 import Portfolio from "./components/Portfolio";
 import Philosophy from "./components/Philosophy";
+import GlobeSection from "./components/GlobeSection";
 import Workflow from "./components/Workflow";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import AdminPortal from "./components/AdminPortal";
 import PrivacyPolicyModal from "./components/PrivacyPolicyModal";
+import AllWorksInfinite from "./components/AllWorksInfinite";
 import { PROJECTS } from "./data";
 import { Project } from "./types";
 
 export default function App() {
+  const [view, setView] = useState<"home" | "all-works">("home");
   const [projectsList, setProjectsList] = useState<Project[]>(PROJECTS);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [customParallaxImages, setCustomParallaxImages] = useState<Record<number, string>>({});
 
   const [theme, setTheme] = useState(() => {
     if (typeof window !== "undefined") {
@@ -50,12 +55,18 @@ export default function App() {
     async function fetchCustomProjects() {
       let customApiProjects: Project[] = [];
       let isMockHidden = false;
+      let hiddenApiProjectIds: string[] = [];
+      let serverParallax: Record<number, string> = {};
       try {
         const response = await fetch("/api/projects");
         const resJson = await response.json();
         if (response.ok && resJson.success && Array.isArray(resJson.data)) {
           customApiProjects = resJson.data;
           isMockHidden = !!resJson.hideMockData;
+          hiddenApiProjectIds = resJson.hiddenProjectIds || [];
+          if (resJson.customParallaxImages) {
+            serverParallax = resJson.customParallaxImages;
+          }
         }
       } catch (err) {
         console.warn("Could not fetch remote custom projects, falling back to local list:", err);
@@ -74,6 +85,18 @@ export default function App() {
         console.error("Local storage parsing mistake:", err);
       }
 
+      let localParallax: Record<number, string> = {};
+      try {
+        const saved = localStorage.getItem("custom_zoom_images");
+        if (saved) {
+          localParallax = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.error("Local storage parallax parse mistake:", e);
+      }
+
+      setCustomParallaxImages({ ...serverParallax, ...localParallax });
+
       const hideMock = isMockHidden || localHideMock;
 
       // Union of custom server & custom local list items
@@ -85,7 +108,7 @@ export default function App() {
       });
 
       // Merge on top of static base PROJECTS listing, with custom updates overriding by ID matching
-      const baseProjects = hideMock ? [] : PROJECTS;
+      const baseProjects = hideMock ? [] : PROJECTS.filter((p) => !hiddenApiProjectIds.includes(p.id));
       const mergedList = [...baseProjects];
       combinedCustoms.forEach((customProj) => {
         const existingIdx = mergedList.findIndex((p) => p.id === customProj.id);
@@ -131,23 +154,61 @@ export default function App() {
 
   return (
     <div className="relative font-sans text-brand-navy selection:bg-brand-blue selection:text-white antialiased min-h-screen bg-white dark:bg-[#08080a] transition-colors duration-300">
-      {/* Floating Dynamic Island Navigation Pill */}
-      <DynamicIsland onTalkClick={triggerFocusInquiry} theme={theme} onThemeToggle={toggleTheme} />
+      <AnimatePresence mode="wait">
+        {view === "home" ? (
+          <motion.div
+            key="home-view"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Floating Dynamic Island Navigation Pill */}
+            <DynamicIsland onTalkClick={triggerFocusInquiry} theme={theme} onThemeToggle={toggleTheme} />
 
-      {/* Hero presentation screen */}
-      <Hero onPortfolioView={triggerScrollToPortfolio} />
+            {/* Hero presentation screen */}
+            <Hero onPortfolioView={triggerScrollToPortfolio} />
 
-      {/* Selective works showcases */}
-      <Portfolio projects={projectsList} />
+            {/* Selective works showcases (Max 5 photos/projects on the main page) */}
+            <Portfolio 
+              projects={projectsList.slice(0, 5)} 
+              customParallaxImages={customParallaxImages} 
+              onViewAllClick={() => { setView("all-works"); window.scrollTo({ top: 0, behavior: "instant" }); }}
+              totalWorksCount={projectsList.length}
+            />
 
-      {/* Swiss grid typography philosophy */}
-      <Philosophy />
+            {/* Swiss grid typography philosophy */}
+            <Philosophy />
 
-      {/* Modular workflow list */}
-      <Workflow />
+            {/* Scroll-linked globe collaboration section */}
+            <GlobeSection />
 
-      {/* Custom contact card & inquiry form */}
-      <Contact />
+            {/* Modular workflow list */}
+            <Workflow />
+
+            {/* Custom contact card & inquiry form */}
+            <Contact />
+
+            {/* Site credits footer */}
+            <Footer onAdminClick={() => setIsAdminOpen(true)} onPrivacyClick={() => setIsPrivacyOpen(true)} />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="all-works-view"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <AllWorksInfinite 
+              projects={projectsList} 
+              customParallaxImages={customParallaxImages} 
+              onBack={() => { setView("home"); window.scrollTo({ top: 0, behavior: "instant" }); }}
+              onRefresh={handleProjectAdded}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Secure systems password locked upload workspace portal */}
       <AdminPortal
@@ -155,6 +216,7 @@ export default function App() {
         onClose={() => setIsAdminOpen(false)}
         onProjectAdded={handleProjectAdded}
         projects={projectsList}
+        customParallaxImages={customParallaxImages}
       />
 
       {/* Privacy Policy view modal */}
@@ -162,9 +224,6 @@ export default function App() {
         isOpen={isPrivacyOpen}
         onClose={() => setIsPrivacyOpen(false)}
       />
-
-      {/* Site credits footer */}
-      <Footer onAdminClick={() => setIsAdminOpen(true)} onPrivacyClick={() => setIsPrivacyOpen(true)} />
     </div>
   );
 }

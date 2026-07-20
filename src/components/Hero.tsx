@@ -56,7 +56,7 @@ export default function Hero({ onPortfolioView }: HeroProps) {
         >
           <button
             onClick={onPortfolioView}
-            className="group bg-brand-blue hover:bg-brand-blue-hover text-white font-sans text-xs font-semibold tracking-wide px-8 py-3.5 rounded-full transition-all duration-300 shadow-brand-button active:scale-95 inline-flex items-center gap-2 cursor-pointer"
+            className="group bg-brand-blue/90 dark:bg-brand-blue/85 hover:bg-brand-blue text-white font-sans text-xs font-semibold tracking-wide px-8 py-3.5 rounded-full transition-all duration-300 shadow-[0_8px_24px_rgba(0,102,255,0.2)] dark:shadow-[0_8px_24px_rgba(0,102,255,0.15)] hover:shadow-[0_12px_28px_rgba(0,102,255,0.35)] border border-white/25 backdrop-blur-sm active:scale-95 inline-flex items-center gap-2 cursor-pointer"
           >
             Explore Projects
           </button>
@@ -67,7 +67,7 @@ export default function Hero({ onPortfolioView }: HeroProps) {
               const el = document.getElementById("contact");
               if (el) el.scrollIntoView({ behavior: "smooth" });
             }}
-            className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur hover:bg-white dark:hover:bg-zinc-800 text-brand-navy dark:text-zinc-100 border border-neutral-200 dark:border-neutral-800 font-sans text-xs font-semibold tracking-wide px-8 py-3.5 rounded-full transition-all duration-300 shadow-card-idle dark:shadow-none active:scale-95 inline-flex items-center gap-2"
+            className="bg-white/30 dark:bg-white/[0.04] backdrop-blur-md hover:bg-white/45 dark:hover:bg-white/[0.08] text-brand-navy dark:text-zinc-100 border border-white/40 dark:border-white/10 font-sans text-xs font-semibold tracking-wide px-8 py-3.5 rounded-full transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.04)] active:scale-95 inline-flex items-center gap-2"
           >
             Start Collaboration
           </a>
