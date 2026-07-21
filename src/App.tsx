@@ -16,24 +16,59 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import PrivacyPolicyModal from "./components/PrivacyPolicyModal";
 import AllWorksInfinite from "./components/AllWorksInfinite";
-import { PROJECTS } from "./data";
 import { Project } from "./types";
 import { supabase } from "./supabase";
 
 export default function App() {
   const [view, setView] = useState<"home" | "all-works">("home");
-  const [projectsList, setProjectsList] = useState<Project[]>(PROJECTS);
+  const [projectsList, setProjectsList] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [customParallaxImages, setCustomParallaxImages] = useState<Record<number, string>>({});
+
+  const [hasUserOverride, setHasUserOverride] = useState(() => {
+    if (typeof window !== "undefined") {
+      return !!localStorage.getItem("theme_user_override");
+    }
+    return false;
+  });
 
   const [theme, setTheme] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("theme");
-      if (saved) return saved;
+      if (saved && localStorage.getItem("theme_user_override")) return saved;
       return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     }
     return "light";
   });
+
+  // Automatically listen to system light/dark mode preference changes in real time
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      if (!hasUserOverride) {
+        setTheme(e.matches ? "dark" : "light");
+      }
+    };
+
+    // Modern matchMedia listener with legacy fallback support
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", handleSystemThemeChange);
+    } else {
+      mediaQuery.addListener(handleSystemThemeChange);
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener("change", handleSystemThemeChange);
+      } else {
+        mediaQuery.removeListener(handleSystemThemeChange);
+      }
+    };
+  }, [hasUserOverride]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -46,35 +81,66 @@ export default function App() {
   }, [theme]);
 
   const toggleTheme = () => {
+    setHasUserOverride(true);
+    localStorage.setItem("theme_user_override", "true");
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
   useEffect(() => {
     async function fetchCustomProjects() {
       let customApiProjects: Project[] = [];
-      let isMockHidden = false;
-      let hiddenApiProjectIds: string[] = [];
       let serverParallax: Record<number, string> = {};
 
       try {
-        // Fetch projects directly from Supabase
-        const { data: dbProjects, error: projectsError } = await supabase
+        // Fetch projects directly from Supabase with fallback if ordering by created_at fails
+        let dbProjects: any[] | null = null;
+        let projectsError: any = null;
+
+        const res1 = await supabase
           .from("projects")
           .select("*")
           .order("created_at", { ascending: true });
 
-        if (!projectsError && dbProjects) {
-          customApiProjects = dbProjects.map((p: any) => ({
-            id: p.id,
-            title: p.title,
-            category: p.category,
-            year: p.year,
-            image: p.image,
-            alt: p.alt || p.title || "",
-            description: p.description,
-            details: Array.isArray(p.details) ? p.details : [],
-            link: p.link
-          }));
+        if (!res1.error && res1.data) {
+          dbProjects = res1.data;
+        } else {
+          // Fallback: select without ordering if created_at column doesn't exist
+          const res2 = await supabase.from("projects").select("*");
+          if (!res2.error && res2.data) {
+            dbProjects = res2.data;
+          } else {
+            projectsError = res1.error || res2.error;
+          }
+        }
+
+        if (dbProjects) {
+          customApiProjects = dbProjects
+            .filter((p: any) => !p.is_hidden && !p.hidden)
+            .map((p: any) => {
+              let parsedDetails: string[] = [];
+              if (Array.isArray(p.details)) {
+                parsedDetails = p.details;
+              } else if (typeof p.details === "string") {
+                try {
+                  const json = JSON.parse(p.details);
+                  parsedDetails = Array.isArray(json) ? json : [p.details];
+                } catch (e) {
+                  parsedDetails = p.details ? [p.details] : [];
+                }
+              }
+
+              return {
+                id: String(p.id),
+                title: p.title || p.name || p.project_name || "Untitled Project",
+                category: p.category || p.tag || p.type || "Design",
+                year: p.year ? String(p.year) : (p.created_at ? new Date(p.created_at).getFullYear().toString() : "2026"),
+                image: p.image || p.image_url || p.imageUrl || p.cover_image || p.thumbnail || "",
+                alt: p.alt || p.title || p.name || "Project image",
+                description: p.description || p.desc || p.summary || "",
+                details: parsedDetails,
+                link: p.link || p.url || p.website || ""
+              };
+            });
         } else if (projectsError) {
           console.warn("Error fetching projects from Supabase:", projectsError);
         }
@@ -88,8 +154,6 @@ export default function App() {
 
         if (!settingsError && settingsData && settingsData.value) {
           const val = settingsData.value;
-          isMockHidden = !!val.hideMockData;
-          hiddenApiProjectIds = val.hiddenProjectIds || [];
           if (val.customParallaxImages) {
             serverParallax = val.customParallaxImages;
           }
@@ -110,61 +174,55 @@ export default function App() {
           console.warn("Error fetching parallax_images from Supabase:", parallaxError.message);
         }
       } catch (err) {
-        console.warn("Could not fetch remote custom projects from Supabase, falling back to local list:", err);
+        console.warn("Could not fetch remote custom projects from Supabase:", err);
       }
 
-      // Merge with browser localStorage custom projects for double offline-first resiliency
-      let customLocalProjects: Project[] = [];
-      let localHideMock = false;
-      try {
-        const localData = localStorage.getItem("local_custom_projects");
-        if (localData) {
-          customLocalProjects = JSON.parse(localData);
-        }
-        localHideMock = localStorage.getItem("local_hide_mock_data") === "true";
-      } catch (err) {
-        console.error("Local storage parsing mistake:", err);
-      }
-
-      let localParallax: Record<number, string> = {};
-      try {
-        const saved = localStorage.getItem("custom_zoom_images");
-        if (saved) {
-          localParallax = JSON.parse(saved);
-        }
-      } catch (e) {
-        console.error("Local storage parallax parse mistake:", e);
-      }
-
-      setCustomParallaxImages({ ...serverParallax, ...localParallax });
-
-      const hideMock = isMockHidden || localHideMock;
-
-      // Union of custom server & custom local list items
-      const combinedCustoms = [...customApiProjects];
-      customLocalProjects.forEach((lp) => {
-        if (!combinedCustoms.some((ap) => ap.id === lp.id)) {
-          combinedCustoms.push({ ...lp, isLocalOnly: true });
-        }
-      });
-
-      // Merge on top of static base PROJECTS listing, with custom updates overriding by ID matching
-      const baseProjects = hideMock ? [] : PROJECTS.filter((p) => !hiddenApiProjectIds.includes(p.id));
-      const mergedList = [...baseProjects];
-      combinedCustoms.forEach((customProj) => {
-        const existingIdx = mergedList.findIndex((p) => p.id === customProj.id);
-        if (existingIdx !== -1) {
-          mergedList[existingIdx] = customProj;
-        } else {
-          // Prepend newly uploaded items so they are instantly visible at the head of the portfolio list!
-          mergedList.unshift(customProj);
-        }
-      });
-
-      setProjectsList(mergedList);
+      setCustomParallaxImages(serverParallax);
+      setProjectsList(customApiProjects);
+      setIsLoading(false);
     }
 
     fetchCustomProjects();
+
+    // Subscribe to real-time database changes for seamless live updates
+    const projectsChannel = supabase
+      .channel("live-projects")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "projects" },
+        () => {
+          fetchCustomProjects();
+        }
+      )
+      .subscribe();
+
+    const parallaxChannel = supabase
+      .channel("live-parallax")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "parallax_images" },
+        () => {
+          fetchCustomProjects();
+        }
+      )
+      .subscribe();
+
+    const settingsChannel = supabase
+      .channel("live-settings")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "settings" },
+        () => {
+          fetchCustomProjects();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(projectsChannel);
+      supabase.removeChannel(parallaxChannel);
+      supabase.removeChannel(settingsChannel);
+    };
   }, []);
 
   const triggerFocusInquiry = () => {
@@ -207,12 +265,36 @@ export default function App() {
             <Hero onPortfolioView={triggerScrollToPortfolio} />
 
             {/* Selective works showcases (Max 5 photos/projects on the main page) */}
-            <Portfolio 
-              projects={projectsList.slice(0, 5)} 
-              customParallaxImages={customParallaxImages} 
-              onViewAllClick={() => { setView("all-works"); window.scrollTo({ top: 0, behavior: "instant" }); }}
-              totalWorksCount={projectsList.length}
-            />
+            {isLoading ? (
+              <section id="portfolio" className="relative py-24 sm:py-32 px-4 sm:px-8 max-w-[1400px] mx-auto min-h-[500px]">
+                <div className="animate-pulse space-y-12">
+                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-black/10 dark:border-white/10 pb-8">
+                    <div>
+                      <div className="h-4 w-28 bg-black/10 dark:bg-white/10 rounded mb-3" />
+                      <div className="h-10 w-64 bg-black/10 dark:bg-white/10 rounded" />
+                    </div>
+                    <div className="h-8 w-36 bg-black/10 dark:bg-white/10 rounded-full" />
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
+                    <div className="h-[420px] bg-black/5 dark:bg-white/5 rounded-2xl border border-black/5 dark:border-white/10" />
+                    <div className="h-[420px] bg-black/5 dark:bg-white/5 rounded-2xl border border-black/5 dark:border-white/10 hidden lg:block" />
+                  </div>
+                </div>
+              </section>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4 }}
+              >
+                <Portfolio 
+                  projects={projectsList.slice(0, 5)} 
+                  customParallaxImages={customParallaxImages} 
+                  onViewAllClick={() => { setView("all-works"); window.scrollTo({ top: 0, behavior: "instant" }); }}
+                  totalWorksCount={projectsList.length}
+                />
+              </motion.div>
+            )}
 
             {/* Swiss grid typography philosophy */}
             <Philosophy />

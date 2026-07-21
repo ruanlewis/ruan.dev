@@ -11,12 +11,15 @@ import {
   Paintbrush, 
   ShoppingBag, 
   Layers, 
-  Sparkles,
+  Compass,
   Clock,
   Coins,
-  ArrowUpRight
+  ArrowUpRight,
+  ShieldAlert,
+  Phone
 } from "lucide-react";
 import { supabase } from "../supabase";
+import LiquidButton from "./LiquidButton";
 
 export default function Contact() {
   // Modal state
@@ -30,6 +33,7 @@ export default function Contact() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     projectScope: "", // Set via Visual selection (Step 1)
     brief: "",        // Textarea (Step 2)
     timeline: "",     // Visual select (Step 3)
@@ -128,6 +132,9 @@ ${formData.projectScope}
 [Target Timeline]
 ${formData.timeline}
 
+[Phone / WhatsApp]
+${formData.phone.trim() ? formData.phone.trim() : "Not provided"}
+
 [Mission Brief & Goals]
 ${formData.brief}
 `.trim();
@@ -145,6 +152,7 @@ ${formData.brief}
         setFormData({
           name: "",
           email: "",
+          phone: "",
           projectScope: "",
           brief: "",
           timeline: "",
@@ -193,8 +201,7 @@ ${formData.brief}
           id,
           name,
           email,
-          message,
-          timestamp
+          message
         });
 
       if (!dbError) {
@@ -206,6 +213,7 @@ ${formData.brief}
           setFormData({
             name: "",
             email: "",
+            phone: "",
             projectScope: "",
             brief: "",
             timeline: "",
@@ -233,7 +241,7 @@ ${formData.brief}
     { name: "Brand Direction & Design Systems", desc: "Identity, beautiful custom guidelines, visual design frameworks", icon: Paintbrush },
     { name: "Tailored E-Commerce Craft", desc: "Shopify/Stripe customized storefronts and intuitive payment checkouts", icon: ShoppingBag },
     { name: "Digital Products & Dashboards", desc: "Complex analytics portals, clean internal toolkits, software UI", icon: Layers },
-    { name: "Other Creative Endeavors", desc: "Consulting, engineering consultation, tailored custom systems", icon: Sparkles }
+    { name: "Other Creative Endeavors", desc: "Consulting, engineering consultation, tailored custom systems", icon: Compass }
   ];
 
   const TIMELINES = ["ASAP (Within weeks)", "1 - 2 Months", "3 - 6 Months", "Flexible / Ongoing"];
@@ -300,7 +308,7 @@ ${formData.brief}
       displayName: "Pro (R5,000)",
       price: "R5,000",
       subtitle: "High-Performance Core",
-      desc: "Bespoke multi-page architecture engineered for creative businesses and design-forward solutions.",
+      desc: "Custom multi-page architecture engineered for creative businesses and design-forward solutions.",
       features: [
         "Up to 5 custom layout pages",
         "Premium active micro-interactions",
@@ -323,14 +331,14 @@ ${formData.brief}
       name: "Studio",
       displayName: "Studio (R7,000)",
       price: "R7,000",
-      subtitle: "Bespoke Visual Product",
+      subtitle: "Signature Visual Product",
       desc: "Our gold standard. Boundary-pushing interactions, dynamic media handling, and extreme aesthetic polish.",
       isPopular: true,
       features: [
         "Unlimited custom pages",
         "Rich physics & canvas elements",
         "Supabase dynamic media setups",
-        "Highly polished bespoke layout engine",
+        "Highly polished custom layout engine",
         "Advanced custom Admin Portal view",
       ],
       colorTheme: {
@@ -348,11 +356,11 @@ ${formData.brief}
       name: "Signature",
       displayName: "Signature (From R10,000)",
       price: "From R10,000",
-      subtitle: "Bespoke Elite Masterclass",
+      subtitle: "Signature Elite Masterclass",
       desc: "Ultra-luxury, end-to-end digital mastery. Custom art direction, personalized software layouts, and priority execution.",
       isElite: true,
       features: [
-        "Bespoke digital design consultation",
+        "Custom digital design consultation",
         "Tailored custom database integration",
         "Dedicated server-side systems",
         "24/7 client priority hotline",
@@ -391,20 +399,20 @@ ${formData.brief}
           </span>
         </div>
 
-        {/* Oversized Email link anchor */}
-        <div className="space-y-4">
-          <a
+        {/* Big Scaling Contact Button */}
+        <div className="py-6 flex justify-center items-center">
+          <LiquidButton
+            variant="blue"
             href="mailto:lewisruan4@gmail.com"
-            className="inline-block max-w-full overflow-hidden text-ellipsis font-sans font-extrabold text-[#1d1d1f] dark:text-zinc-100 hover:text-brand-blue transition-colors duration-300 tracking-tighter select-all"
-            style={{ fontSize: "clamp(22px, 6.5vw, 96px)", lineHeight: 1.1 }}
+            className="px-10 py-6 sm:px-16 sm:py-8 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-sans font-black text-xl sm:text-3xl md:text-4xl tracking-tight shadow-[0_20px_50px_rgba(0,102,255,0.18)] hover:scale-105 border border-neutral-800/80 dark:border-neutral-200"
           >
-            lewisruan4@gmail.com
-          </a>
-          <div className="h-[1px] bg-neutral-200/60 dark:bg-neutral-800/80 w-full max-w-md mx-auto" />
+            <span>Contact Ruan</span>
+            <ArrowUpRight className="w-7 h-7 sm:w-10 sm:h-10 stroke-[2.5]" />
+          </LiquidButton>
         </div>
 
         {/* Social anchors matching ruan.dev layout */}
-        <div className="flex justify-center gap-8 mt-12 pb-16 flex-wrap">
+        <div className="flex justify-center gap-8 mt-10 pb-16 flex-wrap">
           <a
             href="https://wa.me/27645851770"
             target="_blank"
@@ -435,7 +443,7 @@ ${formData.brief}
         <div className="mt-20 mb-24 text-left">
           <div className="text-center max-w-2xl mx-auto mb-20 space-y-4">
             <h3 className="font-sans font-black text-3xl sm:text-4xl text-[#1d1d1f] dark:text-zinc-50 tracking-tight">
-              Bespoke Service Offerings
+              Signature Service Offerings
             </h3>
             <p className="font-sans text-sm text-brand-slate dark:text-zinc-400 leading-relaxed">
               Carefully curated creative suites in ZAR, tailored for dynamic performance, flawless responsiveness, and ultimate aesthetic precision.
@@ -502,13 +510,21 @@ ${formData.brief}
                     </ul>
                   </div>
 
-                  {/* Get Started Button */}
-                  <button
-                    onClick={() => handleSelectPackageFromGrid(pkg.displayName)}
-                    className="btn-custom mt-6 w-full py-3.5 rounded-xl text-[13px] font-bold uppercase tracking-[0.03em] transition-all duration-200 cursor-pointer hover:-translate-y-0.5 active:scale-95"
-                  >
-                    Get Started
-                  </button>
+                  {/* Get Started Button with Liquid Wave fill animation */}
+                  <div className="mt-6 w-full flex justify-center">
+                    <LiquidButton
+                      variant={
+                        pkg.id === 'signature' ? 'amber' :
+                        pkg.id === 'studio' ? 'violet' :
+                        pkg.id === 'pro' ? 'blue' : 'emerald'
+                      }
+                      onClick={() => handleSelectPackageFromGrid(pkg.displayName)}
+                      className="w-full py-3.5 px-6 bg-[#15171a] dark:bg-zinc-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md"
+                    >
+                      <span>Get Started</span>
+                      <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                    </LiquidButton>
+                  </div>
                 </div>
               );
             })}
@@ -526,12 +542,14 @@ ${formData.brief}
             Launch our custom interactive project planner to outline your goals, timeline, and estimate budget in under two minutes.
           </p>
 
-          <button
+          <LiquidButton
+            variant="blue"
             onClick={openQuestionnaire}
-            className="bg-brand-blue/90 hover:bg-brand-blue text-white font-sans text-xs font-bold uppercase tracking-widest px-8 py-4 rounded-full transition-all duration-300 shadow-[0_8px_24px_rgba(0,102,255,0.2)] dark:shadow-[0_8px_24px_rgba(0,102,255,0.15)] hover:shadow-[0_12px_28px_rgba(0,102,255,0.35)] border border-white/20 backdrop-blur-sm active:scale-95 inline-flex items-center gap-2 cursor-pointer font-bold"
+            className="px-8 py-4 bg-brand-blue text-white font-sans text-xs font-bold uppercase tracking-widest rounded-full shadow-[0_8px_24px_rgba(0,102,255,0.25)] border border-white/20"
           >
-            Start Project Planner <ArrowUpRight className="w-4 h-4" />
-          </button>
+            <span>Start Project Planner</span>
+            <ArrowUpRight className="w-4 h-4 shrink-0" />
+          </LiquidButton>
         </div>
 
         {/* HIGH INTERACTIVITY POPUP MODAL */}
@@ -598,32 +616,23 @@ ${formData.brief}
                         exit={{ opacity: 0 }}
                         className="flex flex-col items-center justify-center py-12 text-center"
                       >
-                        {/* Apple-Style Face ID Scanning Bracket Animation */}
-                        <div className="relative w-32 h-32 flex items-center justify-center bg-zinc-50 dark:bg-zinc-950/40 border border-slate-100/50 dark:border-neutral-800/50 rounded-[32px] shadow-sm overflow-hidden mb-6">
-                          {/* Corner brackets */}
-                          <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-brand-blue rounded-tl-md animate-pulse" />
-                          <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-brand-blue rounded-tr-md animate-pulse" />
-                          <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-brand-blue rounded-bl-md animate-pulse" />
-                          <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-brand-blue rounded-br-md animate-pulse" />
-
-                          {/* Inner scanning dashes */}
-                          <div className="absolute inset-6 rounded-full border border-dashed border-brand-blue/30 animate-spin" style={{ animationDuration: '4s' }} />
-                          <div className="absolute inset-9 rounded-full border border-dotted border-brand-blue/20 animate-spin" style={{ animationDuration: '8s' }} />
-
-                          {/* Sweeping scanline */}
+                        {/* High-Tech Circular Spinner Animation */}
+                        <div className="relative w-28 h-28 flex items-center justify-center mb-6">
+                          {/* Outer spinning gradient ring */}
+                          <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-brand-blue border-r-brand-blue/50 animate-spin" style={{ animationDuration: '1.2s' }} />
+                          
+                          {/* Inner counter-rotating ring */}
+                          <div className="absolute inset-3 rounded-full border-2 border-transparent border-b-violet-500 border-l-violet-500/40 animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }} />
+                          
+                          {/* Soft central ambient glow pulse */}
                           <motion.div
-                            animate={{
-                              y: [-38, 38, -38],
-                            }}
-                            transition={{
-                              repeat: Infinity,
-                              duration: 1.8,
-                              ease: "easeInOut",
-                            }}
-                            className="absolute left-3 right-3 h-[1.5px] bg-gradient-to-r from-transparent via-brand-blue to-transparent shadow-[0_0_10px_#0066ff] z-10"
+                            animate={{ scale: [0.95, 1.15, 0.95], opacity: [0.3, 0.7, 0.3] }}
+                            transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+                            className="w-12 h-12 rounded-full bg-gradient-to-tr from-brand-blue/30 to-violet-500/30 blur-sm flex items-center justify-center"
                           />
 
-                          <div className="absolute inset-0 bg-gradient-to-tr from-brand-blue/5 to-transparent pointer-events-none" />
+                          {/* Center indicator */}
+                          <Send className="w-5 h-5 text-brand-blue dark:text-blue-400 absolute animate-pulse" />
                         </div>
 
                         <h4 className="font-sans font-extrabold text-sm text-[#1d1d1f] dark:text-zinc-100 tracking-tight animate-pulse">
@@ -643,33 +652,27 @@ ${formData.brief}
                         exit={{ opacity: 0 }}
                         className="flex flex-col items-center justify-center py-8 text-center"
                       >
-                        {/* Apple Face ID Checkmark Success Animation */}
+                        {/* Clean Circular Checkmark Success Badge */}
                         <motion.div
                           initial={{ scale: 0.8, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
                           transition={{ type: "spring", damping: 15, stiffness: 100 }}
-                          className="relative w-32 h-32 flex items-center justify-center bg-zinc-50 dark:bg-zinc-950/60 border border-slate-100 dark:border-neutral-800 rounded-[32px] shadow-sm overflow-hidden mb-6"
+                          className="relative w-24 h-24 flex items-center justify-center bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/80 rounded-full shadow-lg shadow-emerald-500/10 mb-6"
                         >
-                          {/* Green style brackets */}
-                          <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-emerald-500 rounded-tl-md" />
-                          <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-emerald-500 rounded-tr-md" />
-                          <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-emerald-500 rounded-bl-md" />
-                          <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-emerald-500 rounded-br-md" />
-
                           {/* Outer soft breathing glow circle */}
                           <motion.div
                             initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: [1, 1.15, 1], opacity: [0.15, 0.3, 0.15] }}
+                            animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
                             transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-                            className="absolute inset-5 rounded-full border-2 border-emerald-500/20"
+                            className="absolute inset-0 rounded-full border-2 border-emerald-500/30"
                           />
 
                           {/* Draw Checkmark SVG */}
                           <svg
-                            className="w-14 h-14 text-emerald-500"
+                            className="w-12 h-12 text-emerald-600 dark:text-emerald-400"
                             fill="none"
                             stroke="currentColor"
-                            strokeWidth="5"
+                            strokeWidth="4"
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             viewBox="0 0 24 24"
@@ -682,7 +685,7 @@ ${formData.brief}
                                 type: "spring",
                                 stiffness: 140,
                                 damping: 14,
-                                delay: 0.25
+                                delay: 0.2
                               }}
                             />
                           </svg>
@@ -934,7 +937,13 @@ ${formData.brief}
                               </p>
                             </div>
 
-                            <div className="space-y-4 pt-2">
+                            {/* Serious Enquiries Note Badge */}
+                            <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs font-semibold">
+                              <ShieldAlert className="w-4 h-4 shrink-0 text-amber-500" />
+                              <span>Serious enquiries only. Every brief is personally reviewed prior to consultation.</span>
+                            </div>
+
+                            <div className="space-y-3.5 pt-1">
                               {/* Honeypot anti-spam field */}
                               <div className="absolute opacity-0 pointer-events-none w-0 h-0 overflow-hidden">
                                 <label>Do not fill this out if you are human</label>
@@ -949,8 +958,8 @@ ${formData.brief}
                               </div>
 
                               <div className="relative">
-                                <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-slate dark:text-zinc-450 pl-1 mb-1.5">
-                                  Your Full Name
+                                <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-slate dark:text-zinc-450 pl-1 mb-1">
+                                  Your Full Name *
                                 </label>
                                 <input
                                   type="text"
@@ -958,13 +967,13 @@ ${formData.brief}
                                   value={formData.name}
                                   onChange={handleInputChange}
                                   placeholder="e.g. Lewis Ruan"
-                                  className="w-full bg-[#F5F5F7] dark:bg-zinc-800/80 border border-transparent dark:border-neutral-800/40 hover:bg-[#e8e8ed]/60 dark:hover:bg-zinc-700/80 focus:bg-white dark:focus:bg-zinc-900 focus:border-brand-blue/60 focus:ring-1 focus:ring-brand-blue/20 py-3.5 px-4 text-xs text-[#1d1d1f] dark:text-zinc-100 rounded-xl transition-all outline-none"
+                                  className="w-full bg-[#F5F5F7] dark:bg-zinc-800/80 border border-transparent dark:border-neutral-800/40 hover:bg-[#e8e8ed]/60 dark:hover:bg-zinc-700/80 focus:bg-white dark:focus:bg-zinc-900 focus:border-brand-blue/60 focus:ring-1 focus:ring-brand-blue/20 py-3 px-4 text-xs text-[#1d1d1f] dark:text-zinc-100 rounded-xl transition-all outline-none"
                                 />
                               </div>
 
                               <div className="relative">
-                                <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-slate dark:text-zinc-450 pl-1 mb-1.5">
-                                  Email Address
+                                <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-slate dark:text-zinc-450 pl-1 mb-1">
+                                  Email Address *
                                 </label>
                                 <input
                                   type="email"
@@ -972,7 +981,24 @@ ${formData.brief}
                                   value={formData.email}
                                   onChange={handleInputChange}
                                   placeholder="e.g. partner@company.com"
-                                  className="w-full bg-[#F5F5F7] dark:bg-zinc-800/80 border border-transparent dark:border-neutral-800/40 hover:bg-[#e8e8ed]/60 dark:hover:bg-zinc-700/80 focus:bg-white dark:focus:bg-zinc-900 focus:border-brand-blue/60 focus:ring-1 focus:ring-brand-blue/20 py-3.5 px-4 text-xs text-[#1d1d1f] dark:text-zinc-100 rounded-xl transition-all outline-none"
+                                  className="w-full bg-[#F5F5F7] dark:bg-zinc-800/80 border border-transparent dark:border-neutral-800/40 hover:bg-[#e8e8ed]/60 dark:hover:bg-zinc-700/80 focus:bg-white dark:focus:bg-zinc-900 focus:border-brand-blue/60 focus:ring-1 focus:ring-brand-blue/20 py-3 px-4 text-xs text-[#1d1d1f] dark:text-zinc-100 rounded-xl transition-all outline-none"
+                                />
+                              </div>
+
+                              <div className="relative">
+                                <div className="flex items-center justify-between pl-1 mb-1">
+                                  <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-slate dark:text-zinc-450">
+                                    Phone / WhatsApp Number
+                                  </label>
+                                  <span className="text-[9px] font-mono text-slate-400 dark:text-zinc-500">Optional</span>
+                                </div>
+                                <input
+                                  type="tel"
+                                  name="phone"
+                                  value={formData.phone}
+                                  onChange={handleInputChange}
+                                  placeholder="e.g. +27 64 585 1770"
+                                  className="w-full bg-[#F5F5F7] dark:bg-zinc-800/80 border border-transparent dark:border-neutral-800/40 hover:bg-[#e8e8ed]/60 dark:hover:bg-zinc-700/80 focus:bg-white dark:focus:bg-zinc-900 focus:border-brand-blue/60 focus:ring-1 focus:ring-brand-blue/20 py-3 px-4 text-xs text-[#1d1d1f] dark:text-zinc-100 rounded-xl transition-all outline-none"
                                 />
                               </div>
                             </div>
@@ -1012,30 +1038,34 @@ ${formData.brief}
                       <div />
                     )}
 
-                    {/* Next / Submit Button */}
+                    {/* Next / Submit Button with Liquid Wave fill animation */}
                     {currentStep < 4 ? (
-                      <button
+                      <LiquidButton
+                        variant="blue"
                         type="button"
                         onClick={handleNext}
-                        className="bg-brand-blue hover:bg-brand-blue-hover text-white font-sans text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm shadow-blue-500/10"
+                        className="px-5 py-2.5 bg-brand-blue text-white font-sans text-xs font-bold uppercase tracking-wider shadow-sm rounded-xl"
                       >
-                        Continue <ArrowRight className="w-4 h-4" />
-                      </button>
+                        <span>Continue</span>
+                        <ArrowRight className="w-4 h-4 shrink-0" />
+                      </LiquidButton>
                     ) : (
-                      <button
+                      <LiquidButton
+                        variant="emerald"
                         type="button"
                         disabled={isSubmitting}
                         onClick={handleFormSubmit}
-                        className="bg-brand-blue hover:bg-brand-blue-hover text-white font-sans text-xs font-bold uppercase tracking-wider px-6 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm shadow-blue-500/10 active:scale-98"
+                        className="px-6 py-2.5 bg-emerald-600 dark:bg-emerald-600 text-white font-sans text-xs font-bold uppercase tracking-wider shadow-sm rounded-xl"
                       >
                         {isSubmitting ? (
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         ) : (
                           <>
-                            Submit Planner <Send className="w-3.5 h-3.5" />
+                            <span>Submit Planner</span>
+                            <Send className="w-3.5 h-3.5 shrink-0" />
                           </>
                         )}
-                      </button>
+                      </LiquidButton>
                     )}
                   </div>
                 )}

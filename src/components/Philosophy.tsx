@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Compass, Sparkles, Sliders, Type, Database, Check, Layers, RefreshCw } from "lucide-react";
+import { Compass, Sliders, Type, Database, Check, Layers, RefreshCw } from "lucide-react";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 
 interface ScaleStep {

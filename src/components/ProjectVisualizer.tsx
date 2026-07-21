@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  ArrowRight, Sparkles, Sliders, Check, LayoutGrid, 
+  ArrowRight, Sliders, Check, LayoutGrid, 
   RotateCw, Terminal, Eye, Heart, Code, Smartphone, 
   Layers, Volume2, VolumeX, Shield, RefreshCcw, HelpCircle,
   ShoppingCart
@@ -296,7 +296,7 @@ export default function ProjectVisualizer({
             </div>
 
             <div className="text-[10px] leading-relaxed opacity-60 flex items-start gap-2 bg-blue-500/5 p-3 rounded-lg border border-blue-500/10">
-              <Sparkles className="w-4 h-4 text-[#0066ff] shrink-0 mt-0.5" />
+              <Layers className="w-4 h-4 text-[#0066ff] shrink-0 mt-0.5" />
               <p>
                 In production, <strong>The New York Edit</strong> dynamically balances the optical weight of serif glyphs on fluid spring grids to keep negative space proportional.
               </p>

@@ -14,13 +14,17 @@ export default function DynamicIsland({ onTalkClick, theme, onThemeToggle }: Dyn
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isDark = theme === "dark";
-  const glassBg = isDark ? "rgba(12, 12, 14, 0.72)" : "rgba(255, 255, 255, 0.72)";
-  const glassBorder = isDark ? "rgba(63, 63, 70, 0.25)" : "rgba(232, 232, 237, 0.5)";
-  const glassShadow = isDark ? "0 4px 20px -2px rgba(0, 0, 0, 0.4)" : "0 4px 20px -2px rgba(0, 0, 0, 0.04)";
+  const glassBg = isDark ? "rgba(12, 12, 16, 0.76)" : "rgba(255, 255, 255, 0.78)";
+  const glassBorder = isDark ? "rgba(255, 255, 255, 0.12)" : "rgba(255, 255, 255, 0.7)";
+  const glassShadow = isDark
+    ? "0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1)"
+    : "0 8px 32px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.8)";
 
-  const mobileGlassBg = isDark ? "rgba(12, 12, 14, 0.92)" : "rgba(255, 255, 255, 0.95)";
-  const mobileGlassBorder = isDark ? "rgba(63, 63, 70, 0.35)" : "rgba(232, 232, 237, 0.8)";
-  const mobileGlassShadow = isDark ? "0 4px 20px -2px rgba(0, 0, 0, 0.5)" : "0 4px 20px -2px rgba(0, 0, 0, 0.08)";
+  const mobileGlassBg = isDark ? "rgba(12, 12, 16, 0.88)" : "rgba(255, 255, 255, 0.92)";
+  const mobileGlassBorder = isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.8)";
+  const mobileGlassShadow = isDark
+    ? "0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.12)"
+    : "0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.9)";
 
   // Track scroll position using requestAnimationFrame for perfect performance
   useEffect(() => {
@@ -88,12 +92,12 @@ export default function DynamicIsland({ onTalkClick, theme, onThemeToggle }: Dyn
           <motion.div
             animate={{
               backgroundColor: isScrolled ? glassBg : "rgba(255, 255, 255, 0)",
-              backdropFilter: isScrolled ? "blur(14px)" : "blur(0px)",
+              backdropFilter: isScrolled ? "blur(20px)" : "blur(0px)",
               borderColor: isScrolled ? glassBorder : "rgba(232, 232, 237, 0)",
               boxShadow: isScrolled ? glassShadow : "0 4px 20px -2px rgba(0, 0, 0, 0)",
             }}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className="flex items-center gap-2.5 px-4.5 py-2 rounded-full border dark:border-neutral-800/30 dark:shadow-none"
+            className="flex items-center gap-2.5 px-4.5 py-2 rounded-full border border-white/30 dark:border-white/10 dark:shadow-none"
           >
             <a 
               href="#home" 
@@ -122,12 +126,12 @@ export default function DynamicIsland({ onTalkClick, theme, onThemeToggle }: Dyn
           <motion.div
             animate={{
               backgroundColor: isScrolled ? glassBg : "rgba(255, 255, 255, 0)",
-              backdropFilter: isScrolled ? "blur(14px)" : "blur(0px)",
+              backdropFilter: isScrolled ? "blur(20px)" : "blur(0px)",
               borderColor: isScrolled ? glassBorder : "rgba(232, 232, 237, 0)",
               boxShadow: isScrolled ? glassShadow : "0 4px 20px -2px rgba(0, 0, 0, 0)",
             }}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className="flex items-center gap-7 px-6 py-2 rounded-full border dark:border-neutral-800/30 dark:shadow-none"
+            className="flex items-center gap-7 px-6 py-2 rounded-full border border-white/30 dark:border-white/10 dark:shadow-none"
           >
             {/* Nav links with minimalist line indicator */}
             <div className="flex items-center gap-6.5">

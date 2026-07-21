@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useScroll, useTransform, useSpring, useMotionV
 import { ArrowUpRight, X, CheckCircle } from "lucide-react";
 import { Project } from "../types";
 import ProjectVisualizer from "./ProjectVisualizer";
+import LiquidButton from "./LiquidButton";
 
 // 3D Mouse Tilt Parallax Component
 function MouseTilt({ children }: { children: React.ReactNode }) {
@@ -299,7 +300,7 @@ export default function Portfolio({ projects, customParallaxImages, onViewAllCli
       id="portfolio"
       ref={containerRef}
       style={{
-        height: `${(projects.length || 1) * 120 + 30}vh`
+        height: projects.length === 0 ? "100vh" : `${projects.length * 120 + 30}vh`
       }}
       className="relative w-full border-y border-neutral-200/40 dark:border-neutral-900/40 overflow-visible transition-colors duration-300"
     >
@@ -343,8 +344,8 @@ export default function Portfolio({ projects, customParallaxImages, onViewAllCli
             ))
           ) : (
             <div className="text-center space-y-2 select-none z-10">
-              <p className="text-[#6e6e73] dark:text-zinc-400 font-medium font-sans">
-                No works found.
+              <p className="text-[#6e6e73] dark:text-zinc-400 font-medium font-sans text-base md:text-lg">
+                Nothing here yet
               </p>
             </div>
           )}
@@ -558,31 +559,35 @@ export default function Portfolio({ projects, customParallaxImages, onViewAllCli
                     Refined by ruan.dev
                   </p>
                   <p className="text-[11px] text-neutral-400 dark:text-zinc-500 mt-0.5">
-                    Discussing premium bespoke design & development
+                    Discussing premium signature design & development
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-3 justify-center">
                   {activeProject.link && activeProject.link !== "#" && (
-                    <a
+                    <LiquidButton
+                      variant="emerald"
                       href={activeProject.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-white dark:bg-zinc-850 border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-zinc-800 text-[#111111] dark:text-zinc-100 px-5 py-3 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 inline-flex items-center gap-2 cursor-pointer"
+                      className="px-5 py-3 bg-white dark:bg-zinc-850 border border-neutral-200 dark:border-neutral-800 text-[#111111] dark:text-zinc-100 text-xs font-semibold tracking-wide"
                     >
-                      View Live Project <ArrowUpRight className="w-3.5 h-3.5 text-[#0066ff]" />
-                    </a>
+                      <span>View Live Project</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 text-[#0066ff]" />
+                    </LiquidButton>
                   )}
-                  <a
+                  <LiquidButton
+                    variant="blue"
                     href="#contact"
                     onClick={() => {
                       setActiveProject(null);
                       const el = document.getElementById("contact");
                       if (el) el.scrollIntoView({ behavior: "smooth" });
                     }}
-                    className="bg-[#0066ff] text-white hover:bg-brand-blue-hover px-6 py-3 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 shadow-[0_4px_12px_rgba(0,102,255,0.15)] inline-flex items-center gap-2 cursor-pointer"
+                    className="px-6 py-3 bg-[#0066ff] text-white text-xs font-semibold tracking-wide shadow-[0_4px_12px_rgba(0,102,255,0.15)]"
                   >
-                    Start Collaboration <ArrowUpRight className="w-3.5 h-3.5" />
-                  </a>
+                    <span>Start Collaboration</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </LiquidButton>
                 </div>
               </div>
             </motion.div>

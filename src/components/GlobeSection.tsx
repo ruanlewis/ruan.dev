@@ -161,8 +161,11 @@ export default function GlobeSection() {
     // fontOSize is measured directly from the natural "o" letter in the hidden reference heading
     const fontOSize = Math.max(measureRect.height, measureRect.width);
 
-    // Exact top-left target coordinates of the "o" character relative to our sticky viewport container (shifted 5px left)
-    const targetX = measureRect.left - containerRect.left - 5;
+    // Exact top-left target coordinates of the "o" character relative to our sticky viewport container
+    // Desktop shifted slightly further left (-10px), mobile shifted slightly right (+5px)
+    const isMobile = window.innerWidth < 768;
+    const xOffset = isMobile ? 5 : -10;
+    const targetX = measureRect.left - containerRect.left + xOffset;
     const targetY = measureRect.top - containerRect.top;
 
     const containerWidth = containerRect.width;
@@ -260,20 +263,31 @@ export default function GlobeSection() {
         className="sticky top-0 h-screen w-full flex flex-col justify-center items-center overflow-hidden px-6"
       >
         {/* Helper reference corner lines (CAD Grid Style) */}
-        <div className="absolute top-4 left-6 font-mono text-[9px] text-zinc-400 dark:text-zinc-600 tracking-wider hidden md:block">
-          SECT // GLOBAL_COLLABORATION_DOCK
+        <div className="absolute top-4 left-6 font-mono text-[9px] text-zinc-400 dark:text-zinc-600 tracking-wider hidden sm:block">
+          SECT // 04 — GLOBAL_NETWORK
         </div>
-        <div className="absolute bottom-4 right-6 font-mono text-[9px] text-zinc-400 dark:text-zinc-600 tracking-wider hidden md:block">
-          DOCK_LOCK_RATIO // 100%
+        <div className="absolute top-4 right-6 font-mono text-[9px] text-zinc-400 dark:text-zinc-600 tracking-wider hidden sm:block">
+          33.9249° S, 18.4241° E [ HQ ]
+        </div>
+        <div className="absolute bottom-4 left-6 font-mono text-[9px] text-zinc-400 dark:text-zinc-600 tracking-wider hidden sm:block">
+          STATUS // AVAILABLE FOR NEW PROJECTS
+        </div>
+        <div className="absolute bottom-4 right-6 font-mono text-[9px] text-zinc-400 dark:text-zinc-600 tracking-wider hidden sm:block">
+          CAPE TOWN, ZA [ UTC+2 ]
         </div>
 
         {/* 
           1. HIDDEN NATURAL HEADING FOR PRECISE LAYOUT MEASUREMENTS 
-          We render the identical heading hidden in the background. It wraps and flows
-          exactly like the visible heading, giving us 100% accurate viewport coordinates
+          We render the identical layout hidden in the background. It wraps and flows
+          exactly like the visible elements, giving us 100% accurate viewport coordinates
           for the target "o" letter in "world" at any screen size or breakpoint.
         */}
-        <div className="absolute inset-x-6 opacity-0 pointer-events-none select-none z-0 flex justify-center items-center">
+        <div className="absolute inset-x-6 opacity-0 pointer-events-none select-none z-0 flex flex-col justify-center items-center">
+          <div className="mb-4 flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-600 dark:text-blue-400 text-xs font-mono uppercase tracking-widest">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span>Global Reach &amp; Remote Engineering</span>
+          </div>
+
           <h2
             className="font-sans font-bold tracking-tight text-center max-w-[90vw] md:max-w-[85vw] leading-[1.1]"
             style={{ fontSize: "clamp(22px, 4.4vw, 100px)" }}
@@ -283,31 +297,88 @@ export default function GlobeSection() {
               w<span ref={measureRef} className="inline-block">o</span>rld.
             </span>
           </h2>
+
+          <p className="mt-4 max-w-xl text-center text-sm md:text-base text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed">
+            Building high-performance digital products, brand identities, and custom web applications for partners across San Francisco, London, Berlin, and beyond.
+          </p>
+
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5 max-w-2xl">
+            <div className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-xs font-mono">
+              HQ: Cape Town, ZA
+            </div>
+            <div className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-xs font-mono">
+              Sync: UTC-8 to UTC+3
+            </div>
+            <div className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-xs font-mono">
+              100% Async &amp; Distributed
+            </div>
+          </div>
         </div>
 
         {/* 
-          2. THE ACTIVE INTERACTIVE VISIBLE HEADING 
+          2. THE ACTIVE INTERACTIVE VISIBLE HEADING & STATIC CONTENT 
           The heading uses the dynamically-shrinking placeholder slot so that the letters 
           realign seamlessly without wrapping or jumping.
         */}
-        <h2
-          className="font-sans font-bold tracking-tight text-center max-w-[90vw] md:max-w-[85vw] leading-[1.1] z-10 text-brand-navy"
-          style={{ fontSize: "clamp(22px, 4.4vw, 100px)" }}
-        >
-          Collaborating all over the{" "}
-          <span className="whitespace-nowrap inline-flex items-baseline relative">
-            w
-            <motion.span
-              ref={placeholderRef}
-              className="inline-block relative align-middle self-center opacity-0 select-none pointer-events-none"
-              style={{
-                width: placeholderSize,
-                height: placeholderSize,
-              }}
-            />
-            rld.
-          </span>
-        </h2>
+        <div className="z-10 flex flex-col items-center justify-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-4 flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-600 dark:text-blue-400 text-xs font-mono uppercase tracking-widest shadow-sm backdrop-blur-md"
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Global Reach &amp; Remote Engineering</span>
+          </motion.div>
+
+          <h2
+            className="font-sans font-bold tracking-tight text-center max-w-[90vw] md:max-w-[85vw] leading-[1.1] text-brand-navy"
+            style={{ fontSize: "clamp(22px, 4.4vw, 100px)" }}
+          >
+            Collaborating all over the{" "}
+            <span className="whitespace-nowrap inline-flex items-baseline relative">
+              w
+              <motion.span
+                ref={placeholderRef}
+                className="inline-block relative align-middle self-center opacity-0 select-none pointer-events-none"
+                style={{
+                  width: placeholderSize,
+                  height: placeholderSize,
+                }}
+              />
+              rld.
+            </span>
+          </h2>
+
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mt-4 max-w-xl text-center text-sm md:text-base text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed px-4"
+          >
+            Building high-performance digital products, brand identities, and custom web applications for partners across San Francisco, London, Berlin, and beyond.
+          </motion.p>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-6 flex flex-wrap items-center justify-center gap-2.5 max-w-2xl px-4"
+          >
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/80 text-zinc-700 dark:text-zinc-300 text-xs font-mono shadow-sm backdrop-blur-sm">
+              <span className="text-blue-500 font-bold">HQ</span>
+              <span>Cape Town, ZA • 33.9249° S, 18.4241° E</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/80 text-zinc-700 dark:text-zinc-300 text-xs font-mono shadow-sm backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+              <span>Sync: UTC-8 to UTC+3</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/80 text-zinc-700 dark:text-zinc-300 text-xs font-mono shadow-sm backdrop-blur-sm">
+              <span className="text-emerald-500 font-semibold">100%</span>
+              <span>Async &amp; Distributed</span>
+            </div>
+          </motion.div>
+        </div>
 
         {/* 
           3. SCROLL-DRIVEN GLOBE CONTAINER 

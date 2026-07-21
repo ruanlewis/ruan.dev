@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
-import { ArrowDown, Sparkles } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import Strands from "./Strands";
+import LiquidButton from "./LiquidButton";
 
 interface HeroProps {
   onPortfolioView: () => void;
@@ -47,30 +48,33 @@ export default function Hero({ onPortfolioView }: HeroProps) {
           </motion.h1>
         </div>
 
-        {/* Action button triggers - Apple Pill Styling */}
+        {/* Action button triggers with Liquid Wave fill animation */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 z-20 w-full"
         >
-          <button
+          <LiquidButton
+            variant="blue"
             onClick={onPortfolioView}
-            className="group bg-brand-blue/90 dark:bg-brand-blue/85 hover:bg-brand-blue text-white font-sans text-xs font-semibold tracking-wide px-8 py-3.5 rounded-full transition-all duration-300 shadow-[0_8px_24px_rgba(0,102,255,0.2)] dark:shadow-[0_8px_24px_rgba(0,102,255,0.15)] hover:shadow-[0_12px_28px_rgba(0,102,255,0.35)] border border-white/25 backdrop-blur-sm active:scale-95 inline-flex items-center gap-2 cursor-pointer"
+            className="px-8 py-3.5 bg-neutral-900 text-white dark:bg-zinc-800 border border-white/20 shadow-lg text-xs font-bold uppercase tracking-wider"
           >
-            Explore Projects
-          </button>
-          <a
+            <span>Explore Projects</span>
+          </LiquidButton>
+
+          <LiquidButton
+            variant="blue"
             href="#contact"
             onClick={(e) => {
               e.preventDefault();
               const el = document.getElementById("contact");
               if (el) el.scrollIntoView({ behavior: "smooth" });
             }}
-            className="bg-white/30 dark:bg-white/[0.04] backdrop-blur-md hover:bg-white/45 dark:hover:bg-white/[0.08] text-brand-navy dark:text-zinc-100 border border-white/40 dark:border-white/10 font-sans text-xs font-semibold tracking-wide px-8 py-3.5 rounded-full transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.04)] active:scale-95 inline-flex items-center gap-2"
+            className="px-8 py-3.5 bg-white/60 dark:bg-white/10 text-brand-navy dark:text-zinc-100 border border-neutral-300 dark:border-white/10 shadow-md backdrop-blur-md text-xs font-bold uppercase tracking-wider"
           >
             Start Collaboration
-          </a>
+          </LiquidButton>
         </motion.div>
       </div>
 

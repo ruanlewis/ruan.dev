@@ -72,7 +72,7 @@ export default function AllWorksInfinite({ projects, onBack }: AllWorksInfiniteP
               All Crafted Works.
             </h1>
             <p className="font-sans text-sm text-brand-slate dark:text-zinc-400 leading-relaxed">
-              Explore the comprehensive catalog of bespoke digital designs, technical structures, and aesthetic layouts.
+              Explore the comprehensive catalog of custom digital designs, technical structures, and aesthetic layouts.
             </p>
           </div>
 
@@ -173,7 +173,7 @@ export default function AllWorksInfinite({ projects, onBack }: AllWorksInfiniteP
                         {project.title}
                       </h3>
                       <p className="font-sans text-[11px] text-brand-slate dark:text-zinc-400 line-clamp-2 mt-1 leading-relaxed">
-                        {project.description || "Premium bespoke layout emphasizing strict structural order and typography contrast."}
+                        {project.description || "Premium signature layout emphasizing strict structural order and typography contrast."}
                       </p>
                     </div>
 
@@ -182,7 +182,7 @@ export default function AllWorksInfinite({ projects, onBack }: AllWorksInfiniteP
                         {project.category}
                       </span>
                       <span className="font-sans text-[10px] font-bold text-brand-blue uppercase tracking-wider flex items-center gap-1 group-hover:underline">
-                        Bespoke
+                        Signature
                       </span>
                     </div>
                   </div>
@@ -195,7 +195,7 @@ export default function AllWorksInfinite({ projects, onBack }: AllWorksInfiniteP
             <Layers className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto animate-pulse" />
             <div className="space-y-1.5 max-w-sm mx-auto">
               <h3 className="font-sans font-extrabold text-sm text-brand-navy dark:text-zinc-200">
-                No Showcase Items Found
+                Nothing here yet
               </h3>
               <p className="font-sans text-xs text-brand-slate dark:text-zinc-400 leading-relaxed">
                 There are no case studies matching the search query or active category filter.
